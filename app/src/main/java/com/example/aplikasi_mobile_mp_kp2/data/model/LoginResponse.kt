@@ -14,4 +14,6 @@ data class LoginResponse(
     val user: User?,
     @SerializedName("message")
     val message: String?,
+    @SerializedName("divisi")
+    val divisi: Divisi?
 )

@@ -36,8 +36,8 @@ fun LoginScreen(
     navController: NavHostController,
     loginViewModel: AuthViewModel
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("mayasari.gaduh") }
+    var password by remember { mutableStateOf("password") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     val loginResult by loginViewModel.login_result.observeAsState()
@@ -50,12 +50,13 @@ fun LoginScreen(
                 val tipe = (loginResult as NetworkResponse.SUCCESS<LoginResponse>).data.tipe
                 when (tipe?.lowercase()) {
                     "manager" -> {
-                        navController.navigate(Routes.ManagerGraphRoot.route) {
+                        Log.d("NAVIGATION", "Navigating to manager graph")
+                        navController.navigate(Routes.ManagerGraph.route) {
                             popUpTo(Routes.AuthGraph.route) { inclusive = true }
                         }
                     }
                     "employee" -> {
-                        navController.navigate(Routes.EmployeeGraphRoot.route) {
+                        navController.navigate(Routes.EmployeeGraph.route) {
                             popUpTo(Routes.AuthGraph.route) { inclusive = true }
                         }
                     }

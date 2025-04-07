@@ -10,24 +10,23 @@ import com.example.aplikasi_mobile_mp_kp2.screens.employee.home.EmployeeHomeScre
 
 @Composable
 fun EmployeeScaffold(navController: NavHostController) {
-    DrawerScaffoldLayout(
-        navController = navController,
-        drawerRoutes = listOf(
-            Routes.EmployeeHome,
-            Routes.EmployeeTaskList,
-            Routes.EmployeeEvaluation
-        ),
-        startDestination = Routes.EmployeeHome.route,
-        graphRoute = Routes.EmployeeGraph.route
-    ) {
-        composable(Routes.EmployeeHome.route) {
-            EmployeeHomeScreen()
-        }
-        composable(Routes.EmployeeTaskList.route) {
-            Text("Tugas Karyawan")
-        }
-        composable(Routes.EmployeeEvaluation.route) {
-            Text("Evaluasi Karyawan")
-        }
-    }
+//    DrawerScaffoldLayout(
+//        drawerRoutes = listOf(
+//            Routes.EmployeeHome,
+//            Routes.EmployeeTaskList,
+//            Routes.EmployeeEvaluation
+//        ),
+//        startDestination = Routes.EmployeeHome.route,
+//        graphRoute = Routes.EmployeeGraph.route
+//    ) {
+//        composable(Routes.EmployeeHome.route) {
+//            EmployeeHomeScreen()
+//        }
+//        composable(Routes.EmployeeTaskList.route) {
+//            Text("Tugas Karyawan")
+//        }
+//        composable(Routes.EmployeeEvaluation.route) {
+//            Text("Evaluasi Karyawan")
+//        }
+//    }
 }

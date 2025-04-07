@@ -37,10 +37,14 @@ class AuthViewModel(private val application: Application) : AndroidViewModel(app
                 if(response.isSuccessful) {
                     val responseBody = response.body()
                     responseBody?.let { body ->
+                        val divisi = body.divisi?.namaDivisi
                         body.user?.let { user ->
                             sharedPrefsManager.saveAddress(user.alamat)
                             sharedPrefsManager.saveName(user.namaLengkap)
                             sharedPrefsManager.saveUsername(user.username)
+                            if (divisi != null) {
+                                sharedPrefsManager.saveDivisi(divisi)
+                            }
                         }
                         body.token?.let { token ->
                             sharedPrefsManager.saveToken(token)

@@ -17,17 +17,14 @@ import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawerScaffoldLayout(
-    navController: NavHostController, // navController utama
     drawerRoutes: List<Routes>,
-    startDestination: String,
-    graphRoute: String,
-    buildNavGraph: NavGraphBuilder.() -> Unit
+    navController: NavHostController,
+    title: String = "MP KP 2", // bisa disesuaikan
+    content: @Composable (Modifier) -> Unit
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    val drawerNavController = rememberNavController()
-    val currentRoute = drawerNavController.currentBackStackEntryAsState().value?.destination?.route
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -35,12 +32,15 @@ fun DrawerScaffoldLayout(
             ModalDrawerSheet {
                 drawerRoutes.forEach { route ->
                     NavigationDrawerItem(
-                        label = { Text(route.route) },
+                        label = { Text(route.label ?: route.route) },
                         selected = currentRoute == route.route,
                         onClick = {
-                            drawerNavController.navigate(route.route) {
-                                popUpTo(graphRoute) { inclusive = false }
+                            navController.navigate(route.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
                                 launchSingleTop = true
+                                restoreState = true
                             }
                             scope.launch { drawerState.close() }
                         }
@@ -52,24 +52,18 @@ fun DrawerScaffoldLayout(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(currentRoute ?: "Beranda") },
+                    title = { Text(title) },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch { drawerState.open() }
                         }) {
-                            Icon(Icons.Filled.Menu, contentDescription = "Menu")
+                            Icon(Icons.Default.Menu, contentDescription = "Menu")
                         }
                     }
                 )
             }
         ) { innerPadding ->
-            NavHost(
-                navController = drawerNavController,
-                startDestination = startDestination,
-                modifier = Modifier.padding(innerPadding),
-                route = graphRoute,
-                builder = buildNavGraph
-            )
+            content(Modifier.padding(innerPadding))
         }
     }
 }

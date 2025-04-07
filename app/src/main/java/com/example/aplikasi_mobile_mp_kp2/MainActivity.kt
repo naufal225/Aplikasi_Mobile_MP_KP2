@@ -18,17 +18,21 @@ import com.example.aplikasi_mobile_mp_kp2.navigation.NavGraph
 import com.example.aplikasi_mobile_mp_kp2.ui.theme.Aplikasi_Mobile_MP_KP2Theme
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.AuthViewModel
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.AuthViewModelFactory
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val factory = AuthViewModelFactory(application)
+        val managerViewModelFactory = ManagerViewModelFactory(application)
         val authViewModel = ViewModelProvider(this, factory)[AuthViewModel::class]
+        val managerViewModel = ViewModelProvider(this, managerViewModelFactory)[ManagerViewModel::class]
         setContent {
             val navController = rememberNavController()
             Aplikasi_Mobile_MP_KP2Theme {
-                NavGraph(navController, authViewModel = authViewModel)
+                NavGraph(navController, authViewModel = authViewModel, managerViewModel = managerViewModel)
             }
         }
     }
