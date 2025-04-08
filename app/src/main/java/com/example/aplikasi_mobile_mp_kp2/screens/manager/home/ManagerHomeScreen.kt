@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProyekProgressResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
@@ -48,20 +50,27 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
     val divisionName = sharedPrefsManager.getDivisi()
 
     LaunchedEffect(Unit) {
-        managerViewModel.getDataAllProyek() // fetch saat composable muncul
+        managerViewModel.getDataAllProyek()
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(20.dp)
     ) {
         // Header
-        Text("Halo, $managerName 👋", style = MaterialTheme.typography.headlineSmall)
-        Text("Divisi: $divisionName", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+        Text(
+            text = "👋 Selamat datang, $managerName",
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+        )
+        Text(
+            text = "Divisi: $divisionName",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray
+        )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(20.dp))
 
         // Stat Cards
         Row(
@@ -79,6 +88,7 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
                     is NetworkResponse.ERROR -> "?"
                     else -> "-"
                 },
+                color = Color(0xFFD1C4E9), // soft purple
                 modifier = Modifier
                     .height(100.dp)
                     .weight(1f)
@@ -95,69 +105,78 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
                     is NetworkResponse.ERROR -> "?"
                     else -> "-"
                 },
+                color = Color(0xFFC8E6C9), // soft green
                 modifier = Modifier
                     .height(100.dp)
                     .weight(1f)
             )
-
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(28.dp))
 
-        // Sementara dummy list, nanti sambungkan ke data asli
-        SectionHeader("Proyek Deadline Terdekat ⏰")
-        DummyList(items = listOf("Aplikasi HR", "Website Company Profile"))
+        SectionHeader("⏰ Deadline Terdekat")
+        PrettyList(items = listOf("Aplikasi HR", "Website Company Profile"))
 
-        SectionHeader("Verifikasi Tugas ⏳")
-        DummyList(items = listOf("Tugas 1 dari Lina", "Tugas 2 dari Udin"))
+        SectionHeader("✅ Perlu Verifikasi")
+        PrettyList(items = listOf("Tugas 1 dari Lina", "Tugas 2 dari Udin"))
 
-        SectionHeader("Notifikasi 🚨")
-        DummyList(items = listOf("Laporan proyek diterima", "Tugas belum diverifikasi"))
+        SectionHeader("🚨 Notifikasi")
+        PrettyList(items = listOf("Laporan proyek diterima", "Tugas belum diverifikasi"))
     }
 }
 
-
 @Composable
-fun StatCard(title: String, value: String, modifier: Modifier) {
+fun StatCard(title: String, value: String, color: Color, modifier: Modifier) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = color),
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
             Text(title, style = MaterialTheme.typography.labelMedium)
-            Spacer(Modifier.height(8.dp))
-            Text(value, style = MaterialTheme.typography.headlineSmall)
+            Spacer(Modifier.height(6.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+            )
         }
     }
 }
 
 @Composable
 fun SectionHeader(title: String) {
-    Spacer(Modifier.height(16.dp))
-    Text(title, style = MaterialTheme.typography.titleMedium)
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(20.dp))
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+        color = MaterialTheme.colorScheme.primary
+    )
+    Spacer(Modifier.height(10.dp))
 }
 
 @Composable
-fun DummyList(items: List<String>) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+fun PrettyList(items: List<String>) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items.forEach {
             Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                modifier = Modifier
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                elevation = CardDefaults.cardElevation(2.dp)
             ) {
-                Text(it, modifier = Modifier.padding(12.dp))
+                Text(
+                    text = it,
+                    modifier = Modifier.padding(14.dp),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
-    }
-}
-
-@Composable
-fun QuickActionButton(label: String, modifier: Modifier = Modifier) {
-    Button(onClick = { /* TODO */ }, modifier = modifier) {
-        Text(label)
     }
 }

@@ -13,3 +13,9 @@ data class Karyawan(
     @SerializedName("username")
     val username: String
 )
+
+
+data class KaryawanItem(
+    val id: Int,
+    val nama: String
+)

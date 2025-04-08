@@ -28,6 +28,24 @@ sealed class Routes(val route: String, val label: String? = null) {
         }
     }
 
+    data object ManagerAddTask : Routes("manager_add_task" + "/{projectId}", "Tambah Data Tugas") {
+        fun addTaskWithIdProject(projectId: String): String {
+            return "manager_add_task/$projectId"
+        }
+    }
+
+    data object ManagerProjectUpdateTask : Routes("manager_update_task" + "/{taskId}" , "Perbarui Data Tugas") {
+        fun managerProjectUpdateTask(taskId: String): String {
+            return "manager_update_task/$taskId"
+        }
+    }
+
+    data object ManagerProjectBuktiTask : Routes("manager_bukti_task" + "/{taskId}" , "Bukti Tugas Selesai") {
+        fun managerProjectBuktiTask(taskId: String): String {
+            return "manager_bukti_task/$taskId"
+        }
+    }
+
     data object ManagerReport : Routes("manager_report", "Laporan")
 
     // Nested graph wrapper

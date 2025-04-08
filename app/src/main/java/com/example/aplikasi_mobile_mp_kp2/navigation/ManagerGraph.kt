@@ -10,8 +10,11 @@ import androidx.navigation.navigation
 import com.example.aplikasi_mobile_mp_kp2.components.DrawerScaffoldLayout
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.home.ManagerHomeScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectAddScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectAddTaskScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectBuktiTaskScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectDetailScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectUpdateScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectUpdateTaskScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProyekScreen
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 
@@ -75,6 +78,45 @@ fun NavGraphBuilder.managerGraph(
                 navController = navController
             ) {
                 ManagerProjectUpdateScreen(modifier = it, managerViewModel = managerViewModel, id = projectId, navController = navController)
+            }
+        }
+
+        composable(
+            route = "manager_add_task/{projectId}",
+            arguments = listOf(navArgument("projectId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+            DrawerScaffoldLayout(
+                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                navController = navController
+            ) {
+                ManagerProjectAddTaskScreen(modifier = it, managerViewModel = managerViewModel, projectId = projectId.toInt(), navController = navController)
+            }
+        }
+
+        composable(
+            route = "manager_update_task/{taskId}",
+            arguments = listOf(navArgument("taskId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+            DrawerScaffoldLayout(
+                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                navController = navController
+            ) {
+                ManagerProjectUpdateTaskScreen(modifier = it, managerViewModel = managerViewModel, taskId=taskId.toInt(), navController = navController)
+            }
+        }
+
+        composable(
+            route = "manager_bukti_task/{taskId}",
+            arguments = listOf(navArgument("taskId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+            DrawerScaffoldLayout(
+                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                navController = navController
+            ) {
+                ManagerProjectBuktiTaskScreen(modifier = it, managerViewModel = managerViewModel, taskId=taskId, navController = navController)
             }
         }
 

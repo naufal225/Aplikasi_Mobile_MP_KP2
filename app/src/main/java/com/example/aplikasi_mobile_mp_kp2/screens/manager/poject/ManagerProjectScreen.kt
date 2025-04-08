@@ -60,7 +60,7 @@ fun ManagerProyekScreen(
     var selectedStatus by remember { mutableStateOf("in-progress") }
     val context = LocalContext.current
 
-    val statusTabs = listOf("pending", "in-progress", "waiting-for-review", "done")
+    val statusTabs = listOf("pending", "in-progress", "waiting_for_review", "done")
 
     LaunchedEffect(Unit) {
         managerViewModel.getDataAllProyek()
@@ -78,7 +78,7 @@ fun ManagerProyekScreen(
                 Tab(
                     selected = selectedStatus == status,
                     onClick = { selectedStatus = status },
-                    text = { Text(status.replace("-", " ").capitalize()) }
+                    text = { Text(status.replace("-", " ").replace("_", " ").capitalize()) }
                 )
             }
         }

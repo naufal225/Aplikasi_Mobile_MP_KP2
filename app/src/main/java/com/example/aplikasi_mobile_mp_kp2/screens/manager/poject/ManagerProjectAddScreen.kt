@@ -87,9 +87,6 @@ fun ManagerProjectAddScreen(
     val context = LocalContext.current
     val responseAddProject = managerViewModel.response_add_project.observeAsState()
 
-
-
-
     Column(
         modifier = modifier
             .fillMaxSize()
