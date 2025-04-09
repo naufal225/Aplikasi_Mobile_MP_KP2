@@ -21,6 +21,7 @@ import coil.compose.AsyncImage
 import com.example.aplikasi_mobile_mp_kp2.data.model.TugasWithBuktiResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateStatusTaskAndProjectRequest
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
+import com.example.aplikasi_mobile_mp_kp2.data.remote.RetrofitInstance
 import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 
@@ -100,7 +101,7 @@ fun ManagerProjectBuktiTaskScreen(
                         .filter { it.isNotEmpty() }
                         .forEach { imageUrl ->
                             AsyncImage(
-                                model = imageUrl,
+                                model = RetrofitInstance.BASE_URL_STORAGE + imageUrl,
                                 contentDescription = "Bukti pengerjaan",
                                 modifier = Modifier
                                     .fillMaxWidth()
