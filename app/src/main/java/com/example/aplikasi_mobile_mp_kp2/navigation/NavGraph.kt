@@ -19,6 +19,6 @@ fun NavGraph(
     ) {
         authGraph(navController, authViewModel)
         managerGraph(navController, managerViewModel)
-        employeeGraph(navController)
+        employeeGraph(navController, managerViewModel)
     }
 }

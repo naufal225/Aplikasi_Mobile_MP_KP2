@@ -21,13 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import com.example.aplikasi_mobile_mp_kp2.data.remote.SharedPrefsManager
 
 @Composable
 fun EmployeeHomeScreen(
     modifier: Modifier = Modifier,
-    nama: String = "Naufal",
     tugasHariIni: Task = Task(
         title = "Desain Brosur Promo",
         status = "In Progress",
@@ -35,6 +36,12 @@ fun EmployeeHomeScreen(
     ),
     notifikasi: List<String> = listOf("Tugas ‘Proposal Marketing’ sudah diverifikasi")
 ) {
+    val context = LocalContext.current
+    val sharedPrefsManager = SharedPrefsManager(context)
+
+    val employeeName = sharedPrefsManager.getName()
+    val divisiName = sharedPrefsManager.getDivisi()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -43,8 +50,13 @@ fun EmployeeHomeScreen(
     ) {
 
         Text(
-            text = "👋 Hai, $nama!",
+            text = "👋 Hai, $employeeName!",
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+        )
+        Text(
+            text = "Divisi: $divisiName",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray
         )
 
         Spacer(modifier = Modifier.height(16.dp))

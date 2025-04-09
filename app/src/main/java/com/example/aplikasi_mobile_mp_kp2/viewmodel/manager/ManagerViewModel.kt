@@ -108,11 +108,13 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
                 val responseProgress = managerRepository.getDataProyekProgress()
                 val responseAllProyek = managerRepository.getAllDataProyek()
 
-                if (responseAllProyek.isSuccessful && responseAllProyek.body() != null) {
+                if (responseAllProyek.isSuccessful) {
                     _response_all_proyek.postValue(NetworkResponse.SUCCESS(responseAllProyek.body()!!))
 
                 } else {
+
                     _response_all_proyek.postValue(NetworkResponse.ERROR("Gagal memuat proyek selesai"))
+
                 }
 
                 if (responseDone.isSuccessful && responseDone.body() != null) {

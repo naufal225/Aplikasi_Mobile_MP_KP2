@@ -1,4 +1,4 @@
-package com.example.aplikasi_mobile_mp_kp2.screens.manager.poject
+package com.example.aplikasi_mobile_mp_kp2.screens.manager.project
 
 import android.util.Log
 import android.widget.Toast

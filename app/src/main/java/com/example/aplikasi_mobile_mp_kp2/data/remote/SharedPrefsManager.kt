@@ -21,6 +21,14 @@ class SharedPrefsManager(val context: Context) {
         return sharedPreferences.getString("USER_NAME", null)
     }
 
+    fun saveId(id: Int) {
+        sharedPreferences.edit().putString("USER_ID", id.toString()).apply()
+    }
+
+    fun getId() : String? {
+        return sharedPreferences.getString("USER_ID", null)
+    }
+
     fun saveDivisi(username: String) {
         sharedPreferences.edit().putString("USER_DIVISI", username).apply()
     }

@@ -42,6 +42,7 @@ class AuthViewModel(private val application: Application) : AndroidViewModel(app
                             sharedPrefsManager.saveAddress(user.alamat)
                             sharedPrefsManager.saveName(user.namaLengkap)
                             sharedPrefsManager.saveUsername(user.username)
+                            sharedPrefsManager.saveId(user.id)
                             if (divisi != null) {
                                 sharedPrefsManager.saveDivisi(divisi)
                             }

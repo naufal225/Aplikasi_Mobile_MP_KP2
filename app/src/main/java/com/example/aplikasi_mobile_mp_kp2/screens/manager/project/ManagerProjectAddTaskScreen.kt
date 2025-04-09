@@ -1,13 +1,11 @@
-package com.example.aplikasi_mobile_mp_kp2.screens.manager.poject
+package com.example.aplikasi_mobile_mp_kp2.screens.manager.project
 
-import android.app.admin.NetworkEvent
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -19,7 +17,6 @@ import androidx.navigation.NavController
 import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanItem
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskRequest
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
-import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -205,6 +202,7 @@ fun ManagerProjectAddTaskScreen(
     // Optional: Handler setelah tugas berhasil ditambahkan
     LaunchedEffect(responseAddTask) {
         if (responseAddTask is NetworkResponse.SUCCESS) {
+            managerViewModel.response_add_tugas.postValue(null)
             navController.popBackStack() // Kembali ke halaman sebelumnya
         } else if (responseAddTask is NetworkResponse.ERROR) {
             errorMessage = (responseAddTask as NetworkResponse.ERROR).message

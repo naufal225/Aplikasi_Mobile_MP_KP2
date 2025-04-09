@@ -9,13 +9,13 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.aplikasi_mobile_mp_kp2.components.DrawerScaffoldLayout
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.home.ManagerHomeScreen
-import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectAddScreen
-import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectAddTaskScreen
-import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectBuktiTaskScreen
-import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectDetailScreen
-import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectUpdateScreen
-import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProjectUpdateTaskScreen
-import com.example.aplikasi_mobile_mp_kp2.screens.manager.poject.ManagerProyekScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectAddScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectAddTaskScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectBuktiTaskScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectDetailScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectUpdateScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectUpdateTaskScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProyekScreen
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 
 fun NavGraphBuilder.managerGraph(
@@ -26,6 +26,7 @@ fun NavGraphBuilder.managerGraph(
         startDestination = Routes.ManagerHome.route,
         route = Routes.ManagerGraph.route
     ) {
+        // Manager
         composable(Routes.ManagerHome.route) {
             DrawerScaffoldLayout(
                 drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
@@ -128,5 +129,7 @@ fun NavGraphBuilder.managerGraph(
                 Text("Laporan Manajer")
             }
         }
+
+
     }
 }

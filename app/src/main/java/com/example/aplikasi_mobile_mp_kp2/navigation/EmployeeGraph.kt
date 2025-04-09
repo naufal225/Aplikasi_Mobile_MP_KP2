@@ -3,36 +3,75 @@ package com.example.aplikasi_mobile_mp_kp2.navigation
 import androidx.compose.material3.Text
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.aplikasi_mobile_mp_kp2.components.DrawerScaffoldLayout
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.home.EmployeeHomeScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectAddBuktiTugas
+import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectDetailScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectScreen
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 
-fun NavGraphBuilder.employeeGraph(navController: NavHostController) {
+fun NavGraphBuilder.employeeGraph(navController: NavHostController, managerViewModel: ManagerViewModel) {
     navigation(
         startDestination = Routes.EmployeeHome.route,
         route = Routes.EmployeeGraph.route
     ) {
+        val routeDrawer = listOf(
+            Routes.EmployeeHome,
+            Routes.EmployeeProjects,
+            Routes.EmployeeEvaluation
+        )
+
         composable(Routes.EmployeeHome.route) {
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(
-                    Routes.EmployeeHome,
-                    Routes.EmployeeTaskList,
-                    Routes.EmployeeEvaluation
-                ),
+                drawerRoutes = routeDrawer,
                 navController = navController
             ) {
                 EmployeeHomeScreen(it)
             }
         }
 
+        composable(Routes.EmployeeProjects.route) {
+            DrawerScaffoldLayout(
+                drawerRoutes = routeDrawer,
+                navController = navController
+            ) {
+                EmployeeProjectScreen(managerViewModel, navController, it)
+            }
+        }
+
+        composable(
+            route = "employee_project_detail/{projectId}",
+            arguments = listOf(navArgument("projectId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
+            DrawerScaffoldLayout(
+                drawerRoutes = routeDrawer,
+                navController = navController
+            ) {
+                EmployeeProjectDetailScreen(projectId, it, managerViewModel, navController)
+            }
+        }
+
+        composable(
+            route = "employee_project_add_bukti_tugas/{taskId}",
+            arguments = listOf(navArgument("taskId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
+            DrawerScaffoldLayout(
+                drawerRoutes = routeDrawer,
+                navController = navController
+            ) {
+                EmployeeProjectAddBuktiTugas(it)
+            }
+        }
+
         composable(Routes.EmployeeTaskList.route) {
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(
-                    Routes.EmployeeHome,
-                    Routes.EmployeeTaskList,
-                    Routes.EmployeeEvaluation
-                ),
+                drawerRoutes = routeDrawer,
                 navController = navController
             ) {
                 Text("Tugas Karyawan")
@@ -41,11 +80,7 @@ fun NavGraphBuilder.employeeGraph(navController: NavHostController) {
 
         composable(Routes.EmployeeEvaluation.route) {
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(
-                    Routes.EmployeeHome,
-                    Routes.EmployeeTaskList,
-                    Routes.EmployeeEvaluation
-                ),
+                drawerRoutes = routeDrawer,
                 navController = navController
             ) {
                 Text("Evaluasi Karyawan")
