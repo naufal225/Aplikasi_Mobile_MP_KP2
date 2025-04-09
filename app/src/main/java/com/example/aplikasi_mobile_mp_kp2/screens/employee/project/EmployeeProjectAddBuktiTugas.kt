@@ -9,22 +9,49 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toFile
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModel
 import java.io.File
 
 @Composable
-fun EmployeeProjectAddBuktiTugas(modifier: Modifier = Modifier) {
+fun EmployeeProjectAddBuktiTugas(
+    modifier: Modifier = Modifier,
+    employeeViewModel: EmployeeViewModel,
+    taskId: Int,
+    navController: NavController
+) {
     val context = LocalContext.current
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
+    val response = employeeViewModel.response_upload_bukti_tugas.observeAsState()
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedImageUri = uri
+    }
+
+    // 🔄 LaunchedEffect untuk response
+    LaunchedEffect(response.value) {
+        when (val result = response.value) {
+            is NetworkResponse.SUCCESS -> {
+                Toast.makeText(context, "Berhasil upload bukti tugas", Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+            }
+
+            is NetworkResponse.ERROR -> {
+                Toast.makeText(context, "Gagal: ${result.message}", Toast.LENGTH_SHORT).show()
+            }
+
+            else -> {}
+        }
     }
 
     Column(
@@ -54,12 +81,9 @@ fun EmployeeProjectAddBuktiTugas(modifier: Modifier = Modifier) {
 
         Button(
             onClick = {
-                if (selectedImageUri != null) {
-                    // TODO: Ganti logika ini untuk upload ke server pakai ViewModel atau Repository
-                    Toast.makeText(context, "Upload bukti berhasil (simulasi)", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(context, "Pilih gambar dulu!", Toast.LENGTH_SHORT).show()
-                }
+                selectedImageUri?.let { uri ->
+                    employeeViewModel.uploadBuktiTugas(fileUri = uri, idTugas = taskId)
+                } ?: Toast.makeText(context, "Pilih gambar dulu!", Toast.LENGTH_SHORT).show()
             },
             enabled = selectedImageUri != null,
             shape = RoundedCornerShape(10.dp)

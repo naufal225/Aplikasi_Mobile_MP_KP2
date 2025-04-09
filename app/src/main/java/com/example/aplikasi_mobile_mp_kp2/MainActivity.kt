@@ -18,6 +18,8 @@ import com.example.aplikasi_mobile_mp_kp2.navigation.NavGraph
 import com.example.aplikasi_mobile_mp_kp2.ui.theme.Aplikasi_Mobile_MP_KP2Theme
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.AuthViewModel
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.AuthViewModelFactory
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModel
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModelFactory
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModelFactory
 
@@ -27,12 +29,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val factory = AuthViewModelFactory(application)
         val managerViewModelFactory = ManagerViewModelFactory(application)
+        val employeeViewModelFactory = EmployeeViewModelFactory(application)
         val authViewModel = ViewModelProvider(this, factory)[AuthViewModel::class]
         val managerViewModel = ViewModelProvider(this, managerViewModelFactory)[ManagerViewModel::class]
+        val employeeViewModel = ViewModelProvider(this, employeeViewModelFactory)[EmployeeViewModel::class]
         setContent {
             val navController = rememberNavController()
             Aplikasi_Mobile_MP_KP2Theme {
-                NavGraph(navController, authViewModel = authViewModel, managerViewModel = managerViewModel)
+                NavGraph(navController, authViewModel = authViewModel, managerViewModel = managerViewModel, employeeViewModel = employeeViewModel)
             }
         }
     }

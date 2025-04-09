@@ -12,9 +12,10 @@ import com.example.aplikasi_mobile_mp_kp2.screens.employee.home.EmployeeHomeScre
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectAddBuktiTugas
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectDetailScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectScreen
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModel
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 
-fun NavGraphBuilder.employeeGraph(navController: NavHostController, managerViewModel: ManagerViewModel) {
+fun NavGraphBuilder.employeeGraph(navController: NavHostController, managerViewModel: ManagerViewModel, employeeViewModel: EmployeeViewModel) {
     navigation(
         startDestination = Routes.EmployeeHome.route,
         route = Routes.EmployeeGraph.route
@@ -65,7 +66,7 @@ fun NavGraphBuilder.employeeGraph(navController: NavHostController, managerViewM
                 drawerRoutes = routeDrawer,
                 navController = navController
             ) {
-                EmployeeProjectAddBuktiTugas(it)
+                EmployeeProjectAddBuktiTugas(it, employeeViewModel, taskId.toInt(), navController)
             }
         }
 
