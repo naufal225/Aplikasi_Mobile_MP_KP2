@@ -24,8 +24,13 @@ sealed class Routes(val route: String, val label: String? = null) {
         }
     }
 
+    data object EmployeeProfile : Routes("employee_profile_screen","Profil")
+
+
     data object EmployeeTaskList : Routes("employee_tasks", "Tugas")
     data object EmployeeEvaluation : Routes("employee_evaluation", "Evaluasi")
+
+
 
     // Manager
     data object ManagerHome : Routes("manager_home", "Beranda")
@@ -63,7 +68,7 @@ sealed class Routes(val route: String, val label: String? = null) {
         }
     }
 
-    data object ManagerProfile : Routes("manager_profile_screen","Profile")
+    data object ManagerProfile : Routes("manager_profile_screen","Profil")
 
     data object ManagerReport : Routes("manager_report", "Laporan")
 

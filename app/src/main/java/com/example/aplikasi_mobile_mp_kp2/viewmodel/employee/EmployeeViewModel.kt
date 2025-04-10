@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
 import com.example.aplikasi_mobile_mp_kp2.data.model.UploadBuktiTugasResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UploadFotoProfilResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
@@ -28,8 +29,14 @@ class EmployeeViewModel(application: Application) : AndroidViewModel(application
     private val _response_upload_bukti_tugas = MutableLiveData<NetworkResponse<UploadBuktiTugasResponse>>()
     private val _response_upload_foto_profile = MutableLiveData<NetworkResponse<UploadFotoProfilResponse>>()
 
+    private val _response_data_user = MutableLiveData<NetworkResponse<KaryawanX>>()
+
+
     val response_upload_bukti_tugas: LiveData<NetworkResponse<UploadBuktiTugasResponse>> = _response_upload_bukti_tugas
     val response_upload_foto_profil = _response_upload_foto_profile
+
+    val response_data_user = _response_data_user
+
 
     fun uploadBuktiTugas(idTugas: Int, fileUri: Uri) {
         _response_upload_bukti_tugas.postValue(NetworkResponse.LOADING)
@@ -54,6 +61,24 @@ class EmployeeViewModel(application: Application) : AndroidViewModel(application
             } catch (e: Exception) {
                 _response_upload_bukti_tugas.postValue(NetworkResponse.ERROR("Error: ${e.message}"))
                 Log.e("ERROR_UPLOAD_FILE", "Exception saat upload", e)
+            }
+        }
+    }
+
+    fun getDataUser() {
+        _response_data_user.postValue(NetworkResponse.LOADING)
+        viewModelScope.launch {
+            try {
+                val response = employeeRepository.getDataUser()
+                if(response.isSuccessful && response.body() != null) {
+                    _response_data_user.postValue(NetworkResponse.SUCCESS(response.body()!!))
+                } else {
+                    if(response.body() == null || !response.isSuccessful) {
+                        _response_data_user.postValue(NetworkResponse.ERROR("Kesalahan autentikasi (kayaknya)"))
+                    }
+                }
+            } catch (e : Exception) {
+                _response_data_user.postValue(NetworkResponse.ERROR("kalau ga salah server salah kodenya (kyknya)"))
             }
         }
     }

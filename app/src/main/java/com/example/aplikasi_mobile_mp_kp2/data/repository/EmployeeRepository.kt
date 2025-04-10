@@ -11,4 +11,7 @@ class EmployeeRepository(private val employeeInterface: EmployeeInterface) {
 
     suspend fun uploadFotoProfil(file: MultipartBody.Part) =
         employeeInterface.uploadFotoProfil(file)
+
+    suspend fun getDataUser() = employeeInterface.getDataUser()
+
 }

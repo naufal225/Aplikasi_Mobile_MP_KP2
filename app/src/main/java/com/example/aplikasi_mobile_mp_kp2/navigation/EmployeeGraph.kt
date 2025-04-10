@@ -9,9 +9,11 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.aplikasi_mobile_mp_kp2.components.DrawerScaffoldLayout
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.home.EmployeeHomeScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.employee.profile.EmployeeProfileScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectAddBuktiTugas
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectDetailScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.profile.ManagerProfileScreen
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModel
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 
@@ -23,7 +25,7 @@ fun NavGraphBuilder.employeeGraph(navController: NavHostController, managerViewM
         val routeDrawer = listOf(
             Routes.EmployeeHome,
             Routes.EmployeeProjects,
-            Routes.EmployeeEvaluation
+            Routes.EmployeeProfile
         )
 
         composable(Routes.EmployeeHome.route) {
@@ -85,6 +87,18 @@ fun NavGraphBuilder.employeeGraph(navController: NavHostController, managerViewM
                 navController = navController
             ) {
                 Text("Evaluasi Karyawan")
+            }
+        }
+
+        composable(
+            route = Routes.EmployeeProfile.route
+        ) {
+            DrawerScaffoldLayout(
+                drawerRoutes = routeDrawer,
+                navController = navController
+            ) {
+
+                EmployeeProfileScreen(modifier = it, employeeViewModel)
             }
         }
     }
