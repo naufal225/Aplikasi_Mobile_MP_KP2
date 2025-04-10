@@ -1,5 +1,6 @@
 package com.example.aplikasi_mobile_mp_kp2.navigation
 
+import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
 import com.example.aplikasi_mobile_mp_kp2.data.model.Proyek
 import okhttp3.Route
 
@@ -61,6 +62,8 @@ sealed class Routes(val route: String, val label: String? = null) {
             return "manager_bukti_task/$taskId"
         }
     }
+
+    data object ManagerProfile : Routes("manager_profile_screen","Profile")
 
     data object ManagerReport : Routes("manager_report", "Laporan")
 

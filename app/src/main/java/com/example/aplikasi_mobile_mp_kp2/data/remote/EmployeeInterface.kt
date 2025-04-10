@@ -1,6 +1,7 @@
 package com.example.aplikasi_mobile_mp_kp2.data.remote
 
 import com.example.aplikasi_mobile_mp_kp2.data.model.UploadBuktiTugasResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.UploadFotoProfilResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Multipart
@@ -15,4 +16,10 @@ interface EmployeeInterface {
         @Path("id") idTugas: Int,
         @Part file: MultipartBody.Part
     ): Response<UploadBuktiTugasResponse>
+
+    @Multipart
+    @POST("karyawan/upload-foto-profil")
+    suspend fun uploadFotoProfil(
+        @Part foto: MultipartBody.Part
+    ): Response<UploadFotoProfilResponse>
 }

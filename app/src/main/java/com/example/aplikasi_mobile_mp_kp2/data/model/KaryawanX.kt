@@ -29,5 +29,7 @@ data class KaryawanX(
     @SerializedName("updated_at")
     val updatedAt: String,
     @SerializedName("username")
-    val username: String
+    val username: String,
+    @SerializedName("url_foto_profil")
+    val urlFotoProfile: String
 )

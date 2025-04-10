@@ -6,6 +6,7 @@ import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectUpdateTaskRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateProjectRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateStatusTaskAndProjectRequest
 import com.example.aplikasi_mobile_mp_kp2.data.remote.ManagerInterface
+import okhttp3.MultipartBody
 
 class ManagerRepository(private val manajerInterface: ManagerInterface) {
     suspend fun getAllDataProyek() = manajerInterface.getAllDataProyek()
@@ -36,5 +37,8 @@ class ManagerRepository(private val manajerInterface: ManagerInterface) {
 
     suspend fun updateStatusProyek(id: Int, updateStatusTaskAndProjectRequest: UpdateStatusTaskAndProjectRequest) = manajerInterface.updateStatusProyek(id, updateStatusTaskAndProjectRequest)
 
+    suspend fun getDataUser() = manajerInterface.getDataUser()
 
+    suspend fun uploadFotoProfil(file: MultipartBody.Part) =
+        manajerInterface.uploadFotoProfil(file)
 }

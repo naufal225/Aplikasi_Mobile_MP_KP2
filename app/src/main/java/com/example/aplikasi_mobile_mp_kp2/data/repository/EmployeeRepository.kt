@@ -8,4 +8,7 @@ class EmployeeRepository(private val employeeInterface: EmployeeInterface) {
 
     suspend fun uploadBuktiTugas(idTugas: Int, file: MultipartBody.Part) =
         employeeInterface.uploadBuktiTugas(idTugas, file)
+
+    suspend fun uploadFotoProfil(file: MultipartBody.Part) =
+        employeeInterface.uploadFotoProfil(file)
 }

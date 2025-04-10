@@ -4,6 +4,7 @@ import com.example.aplikasi_mobile_mp_kp2.data.model.AddProjectRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.AddProjectResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.AllKaryawanDivisiResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.DataTugasByIdProyekResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectUpdateTaskRequest
@@ -17,14 +18,21 @@ import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateProjectResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateStatusProyekResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateStatusTaskAndProjectRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateStatusTugasResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.UploadFotoProfilResponse
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface ManagerInterface {
+    @GET("user")
+    suspend fun getDataUser() : Response<KaryawanX>
+
     @GET("manajer/proyek-all")
     suspend fun getAllDataProyek() : Response<ProyekProgressResponse>
 
@@ -67,4 +75,10 @@ interface ManagerInterface {
 
     @PUT("manajer/update-status-proyek/{id}")
     suspend fun updateStatusProyek(@Path("id") id: Int, @Body updateStatusTaskAndProjectRequest: UpdateStatusTaskAndProjectRequest) : Response<UpdateStatusProyekResponse>
+
+    @Multipart
+    @POST("karyawan/upload-foto-profil")
+    suspend fun uploadFotoProfil(
+        @Part foto: MultipartBody.Part
+    ): Response<UploadFotoProfilResponse>
 }

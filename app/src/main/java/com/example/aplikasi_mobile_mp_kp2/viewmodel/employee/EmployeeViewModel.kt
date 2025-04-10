@@ -1,6 +1,7 @@
 package com.example.aplikasi_mobile_mp_kp2.viewmodel.employee
 
 import android.app.Application
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -8,6 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.aplikasi_mobile_mp_kp2.data.model.UploadBuktiTugasResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.UploadFotoProfilResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.RetrofitInstance
 import com.example.aplikasi_mobile_mp_kp2.data.repository.EmployeeRepository
@@ -24,7 +26,10 @@ class EmployeeViewModel(application: Application) : AndroidViewModel(application
     val employeeRepository = EmployeeRepository(employeeInterface)
 
     private val _response_upload_bukti_tugas = MutableLiveData<NetworkResponse<UploadBuktiTugasResponse>>()
+    private val _response_upload_foto_profile = MutableLiveData<NetworkResponse<UploadFotoProfilResponse>>()
+
     val response_upload_bukti_tugas: LiveData<NetworkResponse<UploadBuktiTugasResponse>> = _response_upload_bukti_tugas
+    val response_upload_foto_profil = _response_upload_foto_profile
 
     fun uploadBuktiTugas(idTugas: Int, fileUri: Uri) {
         _response_upload_bukti_tugas.postValue(NetworkResponse.LOADING)
@@ -52,4 +57,27 @@ class EmployeeViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+
+    fun uploadFotoProfile(uri: Uri, context: Context) {
+        _response_upload_foto_profile.postValue(NetworkResponse.LOADING)
+        viewModelScope.launch {
+            try {
+                val file = FileUtil.from(context, uri) // kamu bisa pakai helper FileUtil untuk convert Uri jadi File
+                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                val fotoPart = MultipartBody.Part.createFormData("foto", file.name, requestFile)
+
+                val response = employeeRepository.uploadFotoProfil(fotoPart)
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.let {
+                        _response_upload_foto_profile.postValue(NetworkResponse.SUCCESS(it))
+                    }
+                } else {
+                    _response_upload_foto_profile.postValue(NetworkResponse.ERROR("Gagal upload, kesalahan autentikasi"))
+                }
+            } catch (e: Exception) {
+                _response_upload_foto_profile.postValue(NetworkResponse.ERROR(e.message ?: "Error"))
+            }
+        }
+    }
+
 }

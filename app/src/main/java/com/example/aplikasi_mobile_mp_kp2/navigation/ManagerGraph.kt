@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.aplikasi_mobile_mp_kp2.components.DrawerScaffoldLayout
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.home.ManagerHomeScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.profile.ManagerProfileScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectAddScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectAddTaskScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectBuktiTaskScreen
@@ -22,6 +23,7 @@ fun NavGraphBuilder.managerGraph(
     navController: NavHostController,
     managerViewModel: ManagerViewModel
 ) {
+    val drawerRoute = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerProfile)
     navigation(
         startDestination = Routes.ManagerHome.route,
         route = Routes.ManagerGraph.route
@@ -29,7 +31,7 @@ fun NavGraphBuilder.managerGraph(
         // Manager
         composable(Routes.ManagerHome.route) {
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                drawerRoutes = drawerRoute,
                 navController = navController
             ) {
             ManagerHomeScreen(managerViewModel, it)
@@ -38,7 +40,7 @@ fun NavGraphBuilder.managerGraph(
 
         composable(Routes.ManagerProjects.route) {
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                drawerRoutes = drawerRoute,
                 navController = navController
             ) {
                 ManagerProyekScreen(managerViewModel, navController, it)
@@ -51,7 +53,7 @@ fun NavGraphBuilder.managerGraph(
         ) { backStackEntry ->
             val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                drawerRoutes = drawerRoute,
                 navController = navController
             ) {
                 ManagerProjectDetailScreen(projectId, it, managerViewModel, navController)
@@ -62,7 +64,7 @@ fun NavGraphBuilder.managerGraph(
             route = Routes.ManagerProjectAdd.route,
         ) {
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                drawerRoutes = drawerRoute,
                 navController = navController
             ) {
                 ManagerProjectAddScreen(managerViewModel, navController, modifier = it)
@@ -75,7 +77,7 @@ fun NavGraphBuilder.managerGraph(
         ) { backStackEntry ->
             val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                drawerRoutes = drawerRoute,
                 navController = navController
             ) {
                 ManagerProjectUpdateScreen(modifier = it, managerViewModel = managerViewModel, id = projectId, navController = navController)
@@ -88,7 +90,7 @@ fun NavGraphBuilder.managerGraph(
         ) { backStackEntry ->
             val projectId = backStackEntry.arguments?.getString("projectId") ?: ""
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                drawerRoutes = drawerRoute,
                 navController = navController
             ) {
                 ManagerProjectAddTaskScreen(modifier = it, managerViewModel = managerViewModel, projectId = projectId.toInt(), navController = navController)
@@ -101,7 +103,7 @@ fun NavGraphBuilder.managerGraph(
         ) { backStackEntry ->
             val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                drawerRoutes = drawerRoute,
                 navController = navController
             ) {
                 ManagerProjectUpdateTaskScreen(modifier = it, managerViewModel = managerViewModel, taskId=taskId.toInt(), navController = navController)
@@ -114,16 +116,28 @@ fun NavGraphBuilder.managerGraph(
         ) { backStackEntry ->
             val taskId = backStackEntry.arguments?.getString("taskId") ?: ""
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                drawerRoutes = drawerRoute,
                 navController = navController
             ) {
                 ManagerProjectBuktiTaskScreen(modifier = it, managerViewModel = managerViewModel, taskId=taskId, navController = navController)
             }
         }
 
+        composable(
+            route = Routes.ManagerProfile.route
+        ) {
+            DrawerScaffoldLayout(
+                drawerRoutes = drawerRoute,
+                navController = navController
+            ) {
+
+                ManagerProfileScreen(modifier = it, managerViewModel)
+            }
+        }
+
         composable(Routes.ManagerReport.route) {
             DrawerScaffoldLayout(
-                drawerRoutes = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerReport),
+                drawerRoutes = drawerRoute,
                 navController = navController
             ) {
                 Text("Laporan Manajer")

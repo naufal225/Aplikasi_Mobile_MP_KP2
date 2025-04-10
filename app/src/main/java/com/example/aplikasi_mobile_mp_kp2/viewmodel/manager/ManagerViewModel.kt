@@ -1,6 +1,8 @@
 package com.example.aplikasi_mobile_mp_kp2.viewmodel.manager
 
 import android.app.Application
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +11,7 @@ import com.example.aplikasi_mobile_mp_kp2.data.model.AddProjectRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.AddProjectResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.AllKaryawanDivisiResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.DataTugasByIdProyekResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectUpdateTaskRequest
@@ -23,10 +26,15 @@ import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateProjectResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateStatusProyekResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateStatusTaskAndProjectRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateStatusTugasResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.UploadFotoProfilResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.RetrofitInstance
 import com.example.aplikasi_mobile_mp_kp2.data.repository.ManagerRepository
+import com.example.aplikasi_mobile_mp_kp2.utils.FileUtil
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 
 class ManagerViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -64,6 +72,9 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
 
     private val _response_update_status_proyek = MutableLiveData<NetworkResponse<UpdateStatusProyekResponse>>()
 
+    private val _response_data_user = MutableLiveData<NetworkResponse<KaryawanX>>()
+    private val _response_upload_foto_profile = MutableLiveData<NetworkResponse<UploadFotoProfilResponse>>()
+
     val proyek_done = _proyek_done
     val proyek_in_progress = _proyek_in_progress
     val jumlah_proyek_done = _jumlah_proyek_done
@@ -94,6 +105,11 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     val response_update_status_proyek = _response_update_status_proyek
 
     val response_tugas_by_id_tugas_with_bukti = _response_tugas_by_id_tugas_with_bukti
+
+    val response_data_user = _response_data_user
+
+    val response_upload_foto_profil = _response_upload_foto_profile
+
 
     fun getDataAllProyek() {
         _proyek_done.postValue(NetworkResponse.LOADING)
@@ -359,5 +375,44 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun getDataUser() {
+        _response_data_user.postValue(NetworkResponse.LOADING)
+        viewModelScope.launch {
+            try {
+                val response = managerRepository.getDataUser()
+                if(response.isSuccessful && response.body() != null) {
+                    _response_data_user.postValue(NetworkResponse.SUCCESS(response.body()!!))
+                } else {
+                    if(response.body() == null || !response.isSuccessful) {
+                        _response_data_user.postValue(NetworkResponse.ERROR("Kesalahan autentikasi (kayaknya)"))
+                    }
+                }
+            } catch (e : Exception) {
+                _response_data_user.postValue(NetworkResponse.ERROR("kalau ga salah server salah kodenya (kyknya)"))
+            }
+        }
+    }
+
+    fun uploadFotoProfile(uri: Uri, context: Context) {
+        _response_upload_foto_profile.postValue(NetworkResponse.LOADING)
+        viewModelScope.launch {
+            try {
+                val file = FileUtil.from(context, uri) // kamu bisa pakai helper FileUtil untuk convert Uri jadi File
+                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                val fotoPart = MultipartBody.Part.createFormData("foto", file.name, requestFile)
+
+                val response = managerRepository.uploadFotoProfil(fotoPart)
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.let {
+                        _response_upload_foto_profile.postValue(NetworkResponse.SUCCESS(it))
+                    }
+                } else {
+                    _response_upload_foto_profile.postValue(NetworkResponse.ERROR("Gagal upload, kesalahan autentikasi"))
+                }
+            } catch (e: Exception) {
+                _response_upload_foto_profile.postValue(NetworkResponse.ERROR(e.message ?: "Error"))
+            }
+        }
+    }
 
 }
