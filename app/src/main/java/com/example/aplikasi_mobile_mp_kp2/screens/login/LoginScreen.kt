@@ -64,6 +64,7 @@ fun LoginScreen(
                         Toast.makeText(context, "Role tidak dikenal: $tipe", Toast.LENGTH_SHORT).show()
                     }
                 }
+                loginViewModel.login_result.postValue(null)
             }
             is NetworkResponse.ERROR -> {
                 Toast.makeText(context, (loginResult as NetworkResponse.ERROR).message ?: "Login gagal", Toast.LENGTH_SHORT).show()

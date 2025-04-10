@@ -18,16 +18,23 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import androidx.navigation.NavController
 import com.example.aplikasi_mobile_mp_kp2.data.remote.SharedPrefsManager
+import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
+import kotlinx.coroutines.delay
 
 @Composable
 fun EmployeeHomeScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
     tugasHariIni: Task = Task(
         title = "Desain Brosur Promo",
@@ -41,6 +48,27 @@ fun EmployeeHomeScreen(
 
     val employeeName = sharedPrefsManager.getName()
     val divisiName = sharedPrefsManager.getDivisi()
+
+    val alreadyNavigated = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (!alreadyNavigated.value && sharedPrefsManager.getToken() == null) {
+            alreadyNavigated.value = true
+            navController.navigate(Routes.AuthGraph.route) {
+                popUpTo(0) { inclusive = true } // Bersihin semua
+                launchSingleTop = true
+            }
+        }
+    }
+
+    LaunchedEffect(true) {
+        delay(100) // opsional, beri waktu sistem stabil
+        if (sharedPrefsManager.getToken() == null) {
+            navController.navigate(Routes.AuthGraph.route) {
+                popUpTo(0) { inclusive = true } // Hapus semua history biar gak balik lagi
+            }
+        }
+    }
 
     Column(
         modifier = modifier

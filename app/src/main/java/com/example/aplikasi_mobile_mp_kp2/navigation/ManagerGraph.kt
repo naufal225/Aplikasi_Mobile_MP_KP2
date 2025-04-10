@@ -17,11 +17,13 @@ import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProject
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectUpdateScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProjectUpdateTaskScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.project.ManagerProyekScreen
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.AuthViewModel
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 
 fun NavGraphBuilder.managerGraph(
     navController: NavHostController,
-    managerViewModel: ManagerViewModel
+    managerViewModel: ManagerViewModel,
+    authViewModel: AuthViewModel
 ) {
     val drawerRoute = listOf(Routes.ManagerHome, Routes.ManagerProjects, Routes.ManagerProfile)
     navigation(
@@ -34,7 +36,7 @@ fun NavGraphBuilder.managerGraph(
                 drawerRoutes = drawerRoute,
                 navController = navController
             ) {
-            ManagerHomeScreen(managerViewModel, it)
+            ManagerHomeScreen(managerViewModel, it, navController)
             }
         }
 
@@ -131,7 +133,7 @@ fun NavGraphBuilder.managerGraph(
                 navController = navController
             ) {
 
-                ManagerProfileScreen(modifier = it, managerViewModel)
+                ManagerProfileScreen(navController,modifier = it, managerViewModel, authViewModel)
             }
         }
 

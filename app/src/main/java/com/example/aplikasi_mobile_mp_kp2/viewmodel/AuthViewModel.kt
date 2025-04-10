@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.aplikasi_mobile_mp_kp2.data.model.LoginRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.LoginResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.LogoutResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.RetrofitInstance
 import com.example.aplikasi_mobile_mp_kp2.data.remote.SharedPrefsManager
@@ -20,7 +21,7 @@ class AuthViewModel(private val application: Application) : AndroidViewModel(app
     private val sharedPrefsManager = SharedPrefsManager(application.applicationContext)
 
     private var _login_result = MutableLiveData<NetworkResponse<LoginResponse>>()
-    private var _logout_result = MutableLiveData<NetworkResponse<LoginResponse>>()
+    private var _logout_result = MutableLiveData<NetworkResponse<LogoutResponse>>()
 
     val login_result = _login_result
     val logout_result = _logout_result
@@ -63,6 +64,31 @@ class AuthViewModel(private val application: Application) : AndroidViewModel(app
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Login error", e)
                 _login_result.postValue(NetworkResponse.ERROR("kesalahan jaringan"))
+            }
+        }
+    }
+
+    fun logout() {
+        _logout_result.postValue(NetworkResponse.LOADING)
+        viewModelScope.launch {
+            try {
+                val response = authRepos.logout()
+                if(response.isSuccessful) {
+                    response.body()?.let {
+                        _logout_result.postValue(NetworkResponse.SUCCESS(it))
+
+                    }
+                    sharedPrefsManager.clearSharedPref()
+                } else {
+                    if(response.code() in 400..499) {
+                        _logout_result.postValue( NetworkResponse.ERROR("Kesalahan Autentikasi"))
+                    } else if(response.code() in 500..599) {
+                        _logout_result.postValue(NetworkResponse.ERROR("Kesalahan server"))
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Logout error", e)
+                _logout_result.postValue(NetworkResponse.ERROR("kesalahan jaringan"))
             }
         }
     }

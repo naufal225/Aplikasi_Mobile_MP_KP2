@@ -1,6 +1,7 @@
 package com.example.aplikasi_mobile_mp_kp2.screens.employee.profile
 
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,22 +43,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.RetrofitInstance
+import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.AuthViewModel
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModel
 
 @Composable
 fun EmployeeProfileScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
-    employeeViewModel: EmployeeViewModel
+    employeeViewModel: EmployeeViewModel,
+    authViewModel: AuthViewModel
 ) {
     val responseDataUser by employeeViewModel.response_data_user.observeAsState()
     val responseUploadPP by employeeViewModel.response_upload_foto_profil.observeAsState()
     val context = LocalContext.current
     val karyawan = remember { mutableStateOf<KaryawanX?>(null) }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val logoutResponse by authViewModel.logout_result.observeAsState()
 
     // Gallery launcher
     val launcher = rememberLauncherForActivityResult(
@@ -87,6 +95,7 @@ fun EmployeeProfileScreen(
             when (it) {
                 is NetworkResponse.ERROR -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                 is NetworkResponse.SUCCESS -> {
+                    employeeViewModel.response_upload_foto_profil.postValue(null)
                     Toast.makeText(context, "Upload berhasil!", Toast.LENGTH_SHORT).show()
                     employeeViewModel.getDataUser() // Refresh data user
                 }
@@ -99,6 +108,27 @@ fun EmployeeProfileScreen(
     LaunchedEffect(selectedImageUri) {
         selectedImageUri?.let {
             employeeViewModel.uploadFotoProfile(it, context)
+        }
+    }
+
+    LaunchedEffect(logoutResponse) {
+        logoutResponse?.let {
+            when(it) {
+                is NetworkResponse.ERROR -> {
+                    Log.e("ERROR_LOGOUT", it.message)
+                }
+                NetworkResponse.LOADING -> {
+
+                }
+                is NetworkResponse.SUCCESS -> {
+                    navController.navigate(Routes.AuthGraph.route) {
+                        popUpTo(0) { inclusive = true } // reset semua stack
+                        launchSingleTop = true
+                    }
+                    authViewModel.logout_result.postValue(null)
+
+                }
+            }
         }
     }
 
@@ -120,7 +150,7 @@ fun EmployeeProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            model = RetrofitInstance.BASE_URL_STORAGE + (data.urlFotoProfile ?: ""),
+            model = RetrofitInstance.BASE_URL_STORAGE + data.urlFotoProfile,
             contentDescription = "Foto Profil",
             modifier = Modifier
                 .size(120.dp)
@@ -151,7 +181,9 @@ fun EmployeeProfileScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = { /* Logout logic */ },
+            onClick = {
+                authViewModel.logout()
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
         ) {
             Icon(Icons.Default.Logout, contentDescription = "Logout")

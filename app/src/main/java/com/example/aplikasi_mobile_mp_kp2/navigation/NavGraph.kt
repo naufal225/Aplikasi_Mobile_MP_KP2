@@ -14,13 +14,14 @@ fun NavGraph(
     authViewModel: AuthViewModel,
     managerViewModel: ManagerViewModel,
     employeeViewModel: EmployeeViewModel,
+
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
         authGraph(navController, authViewModel)
-        managerGraph(navController, managerViewModel)
-        employeeGraph(navController, managerViewModel, employeeViewModel)
+        managerGraph(navController, managerViewModel, authViewModel)
+        employeeGraph(navController, managerViewModel, employeeViewModel, authViewModel)
     }
 }

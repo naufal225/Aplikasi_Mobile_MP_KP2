@@ -30,13 +30,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProyekProgressResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.SharedPrefsManager
+import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = Modifier) {
+fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = Modifier, navController: NavController) {
     val context = LocalContext.current
     val sharedPrefsManager = remember { SharedPrefsManager(context) }
 
@@ -49,9 +52,18 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
     val managerName = sharedPrefsManager.getName()
     val divisionName = sharedPrefsManager.getDivisi()
 
-    LaunchedEffect(Unit) {
-        managerViewModel.getDataAllProyek()
+    val token = remember { sharedPrefsManager.getToken() } // disimpan di remember
+
+    LaunchedEffect(token) {
+        if (token == null) {
+            navController.navigate(Routes.AuthGraph.route) {
+                popUpTo(0) { inclusive = true } // clear semua
+            }
+        } else {
+            managerViewModel.getDataAllProyek()
+        }
     }
+
 
     Column(
         modifier = modifier
