@@ -34,7 +34,7 @@ fun NavGraphBuilder.employeeGraph(navController: NavHostController, managerViewM
                 drawerRoutes = routeDrawer,
                 navController = navController
             ) {
-                EmployeeHomeScreen(navController, it)
+                EmployeeHomeScreen(navController, it, employeeViewModel)
             }
         }
 

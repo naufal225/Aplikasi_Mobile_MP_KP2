@@ -1,5 +1,6 @@
 package com.example.aplikasi_mobile_mp_kp2.screens.manager.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationData
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProyekProgressResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.SharedPrefsManager
@@ -49,10 +52,16 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
     val responseProyekDone by managerViewModel.response_proyek_done.observeAsState()
     val responseProyekInProgress by managerViewModel.response_proyek_in_progress.observeAsState()
 
+    val responseNotif by managerViewModel.response_list_notif.observeAsState()
+    val listNotifState = remember { mutableStateOf<List<NotificationData>>(emptyList()) }
     val managerName = sharedPrefsManager.getName()
     val divisionName = sharedPrefsManager.getDivisi()
 
     val token = remember { sharedPrefsManager.getToken() } // disimpan di remember
+
+    LaunchedEffect(Unit) {
+        managerViewModel.getNotification()
+    }
 
     LaunchedEffect(token) {
         if (token == null) {
@@ -61,6 +70,27 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
             }
         } else {
             managerViewModel.getDataAllProyek()
+        }
+    }
+
+    LaunchedEffect(responseNotif) {
+        when(responseNotif) {
+            is NetworkResponse.ERROR -> {
+                Log.d("ERROR_NOTIF", "")
+            }
+            NetworkResponse.LOADING -> {
+                Log.d("LOADING_NOTIF", "")
+
+            }
+            is NetworkResponse.SUCCESS -> {
+                val response = (responseNotif as NetworkResponse.SUCCESS).data
+                listNotifState.value = response.data
+                Log.d("BERHASIL", "")
+
+            }
+            else -> {
+
+            }
         }
     }
 
@@ -126,14 +156,31 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
 
         Spacer(Modifier.height(28.dp))
 
-        SectionHeader("⏰ Deadline Terdekat")
-        PrettyList(items = listOf("Aplikasi HR", "Website Company Profile"))
+        Text(
+            text = "📣 Pemberitahuan:",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
 
-        SectionHeader("✅ Perlu Verifikasi")
-        PrettyList(items = listOf("Tugas 1 dari Lina", "Tugas 2 dari Udin"))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        SectionHeader("🚨 Notifikasi")
-        PrettyList(items = listOf("Laporan proyek diterima", "Tugas belum diverifikasi"))
+        listNotifState.value.forEach{ notif ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8E9))
+            ) {
+                notif.pesan?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
     }
 }
 

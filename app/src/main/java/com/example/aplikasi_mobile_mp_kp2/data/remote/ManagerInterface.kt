@@ -5,6 +5,9 @@ import com.example.aplikasi_mobile_mp_kp2.data.model.AddProjectResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.AllKaryawanDivisiResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.DataTugasByIdProyekResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationListResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationRequest
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectUpdateTaskRequest
@@ -81,4 +84,11 @@ interface ManagerInterface {
     suspend fun uploadFotoProfil(
         @Part foto: MultipartBody.Part
     ): Response<UploadFotoProfilResponse>
+
+    @GET("manajer/getAllDataNotification")
+    suspend fun getAllDataNotification(): Response<NotificationListResponse>
+
+    @POST("manajer/create-notification")
+    suspend fun createNotification(@Body notificationRequest: NotificationRequest) : Response<NotificationResponse>
+
 }

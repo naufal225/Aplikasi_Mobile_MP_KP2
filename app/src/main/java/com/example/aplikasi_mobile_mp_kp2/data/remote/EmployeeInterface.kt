@@ -1,10 +1,14 @@
 package com.example.aplikasi_mobile_mp_kp2.data.remote
 
 import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationListResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationRequest
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UploadBuktiTugasResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UploadFotoProfilResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -27,4 +31,10 @@ interface EmployeeInterface {
     suspend fun uploadFotoProfil(
         @Part foto: MultipartBody.Part
     ): Response<UploadFotoProfilResponse>
+
+    @GET("karyawan/getAllDataNotification")
+    suspend fun getAllDataNotification(): Response<NotificationListResponse>
+
+    @POST("karyawan/create-notification")
+    suspend fun createNotification(@Body notificationRequest: NotificationRequest) : Response<NotificationResponse>
 }

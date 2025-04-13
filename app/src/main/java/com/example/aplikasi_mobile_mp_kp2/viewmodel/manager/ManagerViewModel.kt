@@ -12,6 +12,9 @@ import com.example.aplikasi_mobile_mp_kp2.data.model.AddProjectResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.AllKaryawanDivisiResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.DataTugasByIdProyekResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationListResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationRequest
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectUpdateTaskRequest
@@ -75,11 +78,14 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     private val _response_data_user = MutableLiveData<NetworkResponse<KaryawanX>>()
     private val _response_upload_foto_profile = MutableLiveData<NetworkResponse<UploadFotoProfilResponse>>()
 
+    private val _response_create_notif = MutableLiveData<NetworkResponse<NotificationResponse>>()
+    private val _response_list_notif = MutableLiveData<NetworkResponse<NotificationListResponse>>()
+
     val proyek_done = _proyek_done
     val proyek_in_progress = _proyek_in_progress
     val jumlah_proyek_done = _jumlah_proyek_done
     val jumlah_proyek_in_progress = _jumlah_proyek_in_progress
-
+    val response_create_notif = _response_create_notif
     val response_by_id_proyek = _response_by_id_proyek
 
     val response_all_proyek = _response_all_proyek
@@ -109,6 +115,8 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
     val response_data_user = _response_data_user
 
     val response_upload_foto_profil = _response_upload_foto_profile
+
+    val response_list_notif = _response_list_notif
 
 
     fun getDataAllProyek() {
@@ -411,6 +419,45 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
                 }
             } catch (e: Exception) {
                 _response_upload_foto_profile.postValue(NetworkResponse.ERROR(e.message ?: "Error"))
+            }
+        }
+    }
+
+    fun postNotification(notificationRequest: NotificationRequest) {
+        _response_create_notif.postValue(NetworkResponse.LOADING)
+        viewModelScope.launch {
+            try {
+                val response = managerRepository.createNotification(notificationRequest)
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.let {
+                        _response_create_notif.postValue(NetworkResponse.SUCCESS(it))
+                    }
+                } else {
+                    _response_create_notif.postValue(NetworkResponse.ERROR("Gagal buat notifikasi"))
+                }
+            } catch (e: Exception) {
+                _response_create_notif.postValue(NetworkResponse.ERROR(e.message ?: "Error"))
+            }
+        }
+    }
+
+    fun getNotification() {
+        _response_list_notif.postValue(NetworkResponse.LOADING)
+        viewModelScope.launch {
+            try {
+                val response = managerRepository.getAllDataNotification()
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.let {
+                        _response_list_notif.postValue(NetworkResponse.SUCCESS(it))
+                        Log.d("NOTIF_GET_VM", it.toString())
+                    }
+                } else {
+                    _response_list_notif.postValue(NetworkResponse.ERROR("Gagal ambil notifikasi"))
+                    Log.e("ERROR_NOTIF_", "error")
+                }
+            } catch (e: Exception) {
+                _response_list_notif.postValue(NetworkResponse.ERROR(e.message ?: "Error"))
+                Log.e("ERROR_NOTIF_CATCH", e.message.toString())
             }
         }
     }

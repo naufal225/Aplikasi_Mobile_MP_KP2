@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanItem
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskRequest
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
+import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -66,6 +67,24 @@ fun ManagerProjectAddTaskScreen(
     val formattedDate = remember(tenggatWaktuMillis) {
         tenggatWaktuMillis?.let { dateFormatter.format(Date(it)) } ?: ""
     }
+
+    LaunchedEffect(responseAddTask) {
+        responseAddTask?.let {
+            when(it) {
+                is NetworkResponse.ERROR -> {
+                    errorMessage = (responseAddTask as NetworkResponse.ERROR).message
+                    Log.d("ERROR", "ERROR TUGAS")
+                }
+                NetworkResponse.LOADING -> {}
+                is NetworkResponse.SUCCESS -> {
+                    navController.navigate(Routes.ManagerProjectDetail.route)
+                    managerViewModel.response_add_tugas.postValue(null)
+                }
+                else -> {}
+            }
+        }
+    }
+
 
     Column(
         modifier = modifier
@@ -190,6 +209,7 @@ fun ManagerProjectAddTaskScreen(
                             id_karyawan = selectedKaryawan!!.id
                         )
                         managerViewModel.addTugasToProyek(projectId, request)
+                        navController.popBackStack()
                     }
                 }
             },
@@ -199,15 +219,6 @@ fun ManagerProjectAddTaskScreen(
         }
     }
 
-    // Optional: Handler setelah tugas berhasil ditambahkan
-    LaunchedEffect(responseAddTask) {
-        if (responseAddTask is NetworkResponse.SUCCESS) {
-            managerViewModel.response_add_tugas.postValue(null)
-            navController.popBackStack() // Kembali ke halaman sebelumnya
-        } else if (responseAddTask is NetworkResponse.ERROR) {
-            errorMessage = (responseAddTask as NetworkResponse.ERROR).message
-        }
-    }
 
     if (showDatePicker) {
         val datePickerState = rememberDatePickerState(

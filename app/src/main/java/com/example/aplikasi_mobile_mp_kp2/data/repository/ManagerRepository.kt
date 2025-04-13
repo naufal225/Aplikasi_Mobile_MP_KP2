@@ -1,6 +1,7 @@
 package com.example.aplikasi_mobile_mp_kp2.data.repository
 
 import com.example.aplikasi_mobile_mp_kp2.data.model.AddProjectRequest
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectAddTaskRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.ProjectUpdateTaskRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateProjectRequest
@@ -41,4 +42,8 @@ class ManagerRepository(private val manajerInterface: ManagerInterface) {
 
     suspend fun uploadFotoProfil(file: MultipartBody.Part) =
         manajerInterface.uploadFotoProfil(file)
+
+    suspend fun createNotification(notificationRequest: NotificationRequest) = manajerInterface.createNotification(notificationRequest)
+
+    suspend fun getAllDataNotification() = manajerInterface.getAllDataNotification()
 }

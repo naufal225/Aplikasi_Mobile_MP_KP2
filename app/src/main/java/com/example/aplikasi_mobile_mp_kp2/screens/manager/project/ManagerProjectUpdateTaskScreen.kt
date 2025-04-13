@@ -53,7 +53,7 @@ fun ManagerProjectUpdateTaskScreen(
                 managerViewModel.response_update_tugas.postValue(null)
                 managerViewModel.getTugasByIdProyek(id_proyek)
                 Toast.makeText(context, "Berhasil memperbarui data tugas", Toast.LENGTH_SHORT).show()
-                navController.navigate(Routes.ManagerProjectDetail.route)
+                navController.popBackStack()
             }
             null -> {}
         }
@@ -270,7 +270,7 @@ fun ManagerProjectUpdateTaskScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Tambah Tugas")
+            Text("Edit Tugas")
         }
     }
 

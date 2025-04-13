@@ -19,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,20 +30,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationData
+import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.SharedPrefsManager
 import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun EmployeeHomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    tugasHariIni: Task = Task(
-        title = "Desain Brosur Promo",
-        status = "In Progress",
-        deadline = "9 April"
-    ),
-    notifikasi: List<String> = listOf("Tugas ‘Proposal Marketing’ sudah diverifikasi")
+    employeeViewModel: EmployeeViewModel
 ) {
     val context = LocalContext.current
     val sharedPrefsManager = SharedPrefsManager(context)
@@ -51,12 +51,35 @@ fun EmployeeHomeScreen(
 
     val alreadyNavigated = remember { mutableStateOf(false) }
 
+    val responseNotif by employeeViewModel.response_list_notif.observeAsState()
+    val listNotifState = remember { mutableStateOf<List<NotificationData>>(emptyList()) }
+
+
+
     LaunchedEffect(Unit) {
+        employeeViewModel.getNotification()
         if (!alreadyNavigated.value && sharedPrefsManager.getToken() == null) {
             alreadyNavigated.value = true
             navController.navigate(Routes.AuthGraph.route) {
                 popUpTo(0) { inclusive = true } // Bersihin semua
                 launchSingleTop = true
+            }
+        }
+    }
+    LaunchedEffect(responseNotif) {
+        when(responseNotif) {
+            is NetworkResponse.ERROR -> {
+
+            }
+            NetworkResponse.LOADING -> {
+
+            }
+            is NetworkResponse.SUCCESS -> {
+                val response = (responseNotif as NetworkResponse.SUCCESS).data
+                listNotifState.value = response.data
+            }
+            else -> {
+
             }
         }
     }
@@ -90,58 +113,24 @@ fun EmployeeHomeScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // CARD STATUS
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                StatItem("Aktif", 4)
-                StatItem("In Progress", 2)
-                StatItem("Menunggu Verifikasi", 1)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // TUGAS HARI INI
-        Text(
-            text = "📌 Tugas Hari Ini:",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = tugasHariIni.title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = tugasHariIni.status,
-                    style = MaterialTheme.typography.labelMedium.copy(color = Color.Blue)
-                )
-                Text(
-                    text = "Deadline: ${tugasHariIni.deadline}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
+//        Card(
+//            modifier = Modifier.fillMaxWidth(),
+//            shape = RoundedCornerShape(16.dp),
+//            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .padding(16.dp)
+//                    .fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                StatItem("Aktif", 4)
+//                StatItem("In Progress", 2)
+//                StatItem("Menunggu Verifikasi", 1)
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.height(24.dp))
 
         // QUICK ACTIONS
         Text(
@@ -163,26 +152,20 @@ fun EmployeeHomeScreen(
                 Text("Lihat Semua Tugas")
             }
 
-            Button(
-                onClick = { /* TODO: Navigate ke upload bukti */ },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Upload Bukti")
-            }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // NOTIFIKASI
         Text(
-            text = "📣 Notifikasi:",
+            text = "📣 Pemberitahuan:",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        notifikasi.forEach { notif ->
+        listNotifState.value.forEach{ notif ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -190,11 +173,13 @@ fun EmployeeHomeScreen(
                 shape = RoundedCornerShape(10.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8E9))
             ) {
-                Text(
-                    text = notif,
-                    modifier = Modifier.padding(12.dp),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                notif.pesan?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }

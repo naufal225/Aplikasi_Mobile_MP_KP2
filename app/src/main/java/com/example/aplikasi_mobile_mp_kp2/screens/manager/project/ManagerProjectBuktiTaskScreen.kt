@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationRequest
 import com.example.aplikasi_mobile_mp_kp2.data.model.TugasWithBuktiResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UpdateStatusTaskAndProjectRequest
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
@@ -113,9 +114,32 @@ fun ManagerProjectBuktiTaskScreen(
                             Button(
                                 onClick = {
                                     managerViewModel.updateStatusTugas(taskId.toInt(), UpdateStatusTaskAndProjectRequest("done"))
+                                    managerViewModel.postNotification(
+                                        NotificationRequest(
+                                            "Tugas diterima",
+                                            "Tugas " + task.namaTugas + " disetujui manajer",
+                                            "karyawan",
+                                            task.idKaryawan
+                                        )
+                                    )
                                 }
                             ) {
                                 Text("Ubah tugas jadi Done")
+                            }
+                            Button(
+                                onClick = {
+                                    managerViewModel.updateStatusTugas(taskId.toInt(), UpdateStatusTaskAndProjectRequest("in-progress"))
+                                    managerViewModel.postNotification(
+                                        NotificationRequest(
+                                            "Tugas ditolak",
+                                            "Tugas " + task.namaTugas + " ditolak manajer",
+                                            "karyawan",
+                                            task.idKaryawan
+                                        )
+                                    )
+                                }
+                            ) {
+                                Text("Tolak Bukti")
                             }
                         }
                 }

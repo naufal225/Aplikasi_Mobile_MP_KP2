@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toFile
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationRequest
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModel
 import java.io.File
@@ -83,6 +84,7 @@ fun EmployeeProjectAddBuktiTugas(
             onClick = {
                 selectedImageUri?.let { uri ->
                     employeeViewModel.uploadBuktiTugas(fileUri = uri, idTugas = taskId)
+
                 } ?: Toast.makeText(context, "Pilih gambar dulu!", Toast.LENGTH_SHORT).show()
             },
             enabled = selectedImageUri != null,

@@ -9,6 +9,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationListResponse
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationRequest
+import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UploadBuktiTugasResponse
 import com.example.aplikasi_mobile_mp_kp2.data.model.UploadFotoProfilResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
@@ -26,12 +29,18 @@ class EmployeeViewModel(application: Application) : AndroidViewModel(application
     val employeeInterface = RetrofitInstance.getInstanceEmployeeInterface(application.applicationContext)
     val employeeRepository = EmployeeRepository(employeeInterface)
 
+    private val _response_create_notif = MutableLiveData<NetworkResponse<NotificationResponse>>()
+
     private val _response_upload_bukti_tugas = MutableLiveData<NetworkResponse<UploadBuktiTugasResponse>>()
     private val _response_upload_foto_profile = MutableLiveData<NetworkResponse<UploadFotoProfilResponse>>()
 
     private val _response_data_user = MutableLiveData<NetworkResponse<KaryawanX>>()
 
+    private val _response_list_notif = MutableLiveData<NetworkResponse<NotificationListResponse>>()
 
+    val response_list_notif = _response_list_notif
+
+    val response_create_notif = _response_create_notif
     val response_upload_bukti_tugas: LiveData<NetworkResponse<UploadBuktiTugasResponse>> = _response_upload_bukti_tugas
     val response_upload_foto_profil = _response_upload_foto_profile
 
@@ -101,6 +110,42 @@ class EmployeeViewModel(application: Application) : AndroidViewModel(application
                 }
             } catch (e: Exception) {
                 _response_upload_foto_profile.postValue(NetworkResponse.ERROR(e.message ?: "Error"))
+            }
+        }
+    }
+
+    fun postNotification(notificationRequest: NotificationRequest) {
+        _response_create_notif.postValue(NetworkResponse.LOADING)
+        viewModelScope.launch {
+            try {
+                val response = employeeRepository.createNotification(notificationRequest)
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.let {
+                        _response_create_notif.postValue(NetworkResponse.SUCCESS(it))
+                    }
+                } else {
+                    _response_create_notif.postValue(NetworkResponse.ERROR("Gagal buat notifikasi"))
+                }
+            } catch (e: Exception) {
+                _response_create_notif.postValue(NetworkResponse.ERROR(e.message ?: "Error"))
+            }
+        }
+    }
+
+    fun getNotification() {
+        _response_list_notif.postValue(NetworkResponse.LOADING)
+        viewModelScope.launch {
+            try {
+                val response = employeeRepository.getAllDataNotification()
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.let {
+                        _response_list_notif.postValue(NetworkResponse.SUCCESS(it))
+                    }
+                } else {
+                    _response_list_notif.postValue(NetworkResponse.ERROR("Gagal ambil notifikasi"))
+                }
+            } catch (e: Exception) {
+                _response_list_notif.postValue(NetworkResponse.ERROR(e.message ?: "Error"))
             }
         }
     }
