@@ -178,13 +178,15 @@ fun ProjectDetailContent(
         ) {
             Text(proyek.namaProyek, style = MaterialTheme.typography.headlineSmall)
 
-            Button(
-                onClick = onUpdateClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Text("Update")
+            if (proyek.status != "waiting_for_review" && proyek.status != "done") {
+                Button(
+                    onClick = onUpdateClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("Update")
+                }
             }
         }
 
@@ -222,17 +224,20 @@ fun ProjectDetailContent(
             else -> listTugas
         }
 
-        Button(
-            onClick = onAddTaskClick,
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(vertical = 8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary
-            )
-        ) {
-            Text("Tambah Tugas")
+        if(proyek.status == "pending" || proyek.status == "in-progress") {
+            Button(
+                onClick = onAddTaskClick,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(vertical = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                Text("Tambah Tugas")
+            }
         }
+
 
         if (filteredTugas.isEmpty()) {
             Text("Tidak ada tugas", modifier = Modifier.padding(16.dp))
@@ -276,7 +281,7 @@ fun ProjectDetailContent(
                 }
             }
 
-            if (proyek.progress == 100) {
+            if (proyek.progress == 100 && proyek.status == "in-progress") {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = onUpdateProyekStatus,
@@ -324,17 +329,20 @@ fun ProjectDetailContent(
                             modifier = Modifier.weight(1f)
                         )
 
-                        Button(
-                            onClick = {
-                                showTaskDialog = false
-                                navController.navigate(Routes.ManagerProjectUpdateTask.managerProjectUpdateTask(taskId = selectedTask!!.id.toString()))
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
-                        ) {
-                            Text("Edit")
+                        if(proyek.status != "done" && proyek.status != "waiting_for_review" && selectedTask!!.status != "done" && selectedTask!!.status != "waiting_for_review") {
+                            Button(
+                                onClick = {
+                                    showTaskDialog = false
+                                    navController.navigate(Routes.ManagerProjectUpdateTask.managerProjectUpdateTask(taskId = selectedTask!!.id.toString()))
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
+                            ) {
+                                Text("Edit")
+                            }
                         }
+
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -370,31 +378,32 @@ fun ProjectDetailContent(
                     // Spacer untuk pisah dengan button bawah
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Conditional action button
-                    when (selectedTask!!.status) {
-                        "pending" -> {
-                            Button(
-                                onClick = {
-                                    managerViewModel.updateStatusTugas(selectedTask!!.id, UpdateStatusTaskAndProjectRequest("in-progress"))
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text("Buat In-Progress")
+                    if(proyek.status != "done") {
+                        when (selectedTask!!.status) {
+                            "pending" -> {
+                                Button(
+                                    onClick = {
+                                        managerViewModel.updateStatusTugas(selectedTask!!.id, UpdateStatusTaskAndProjectRequest("in-progress"))
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text("Buat In-Progress")
+                                }
                             }
-                        }
 
-                        "waiting_for_review" -> {
-                            Button(
-                                onClick = {
-                                    navController.navigate(Routes.ManagerProjectBuktiTask.managerProjectBuktiTask(selectedTask!!.id.toString()))
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.tertiary
-                                ),
-                                enabled = selectedTask != null && selectedTask!!.id != null,
-                            ) {
-                                Text("Lihat Bukti Pengerjaan")
+                            "waiting_for_review" -> {
+                                Button(
+                                    onClick = {
+                                        navController.navigate(Routes.ManagerProjectBuktiTask.managerProjectBuktiTask(selectedTask!!.id.toString()))
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.tertiary
+                                    ),
+                                    enabled = selectedTask != null && selectedTask!!.id != null,
+                                ) {
+                                    Text("Lihat Bukti Pengerjaan")
+                                }
                             }
                         }
                     }

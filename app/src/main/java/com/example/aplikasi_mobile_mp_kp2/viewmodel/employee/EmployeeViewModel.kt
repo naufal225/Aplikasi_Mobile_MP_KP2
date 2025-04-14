@@ -41,7 +41,7 @@ class EmployeeViewModel(application: Application) : AndroidViewModel(application
     val response_list_notif = _response_list_notif
 
     val response_create_notif = _response_create_notif
-    val response_upload_bukti_tugas: LiveData<NetworkResponse<UploadBuktiTugasResponse>> = _response_upload_bukti_tugas
+    val response_upload_bukti_tugas: MutableLiveData<NetworkResponse<UploadBuktiTugasResponse>> = _response_upload_bukti_tugas
     val response_upload_foto_profil = _response_upload_foto_profile
 
     val response_data_user = _response_data_user

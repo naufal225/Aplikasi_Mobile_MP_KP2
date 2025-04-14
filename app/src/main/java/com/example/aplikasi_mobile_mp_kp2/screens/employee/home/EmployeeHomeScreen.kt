@@ -146,7 +146,7 @@ fun EmployeeHomeScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Button(
-                onClick = { /* TODO: Navigate ke daftar tugas */ },
+                onClick = { navController.navigate(Routes.EmployeeProjects.route) },
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Lihat Semua Tugas")

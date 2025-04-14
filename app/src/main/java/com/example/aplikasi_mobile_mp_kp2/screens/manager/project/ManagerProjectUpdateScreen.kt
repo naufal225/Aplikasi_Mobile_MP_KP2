@@ -72,7 +72,7 @@ fun ManagerProjectUpdateScreen(
     var tenggatWaktuMillis by remember { mutableStateOf<Long?>(null) }
 
     // Status options
-    val statusOptions = listOf("pending", "in-progress", "waiting-for-review")
+    val statusOptions = listOf("pending", "in-progress")
 
     // Dropdown expanded state
     var statusExpanded by remember { mutableStateOf(false) }
@@ -98,7 +98,7 @@ fun ManagerProjectUpdateScreen(
     val context = LocalContext.current
 
     // Observe responses
-    val responseUpdate = managerViewModel.response_update_project.observeAsState()
+    val responseUpdate by managerViewModel.response_update_project.observeAsState()
     val responseById = managerViewModel.response_by_id_proyek.observeAsState()
 
     // Fetch project data when screen loads
@@ -110,6 +110,8 @@ fun ManagerProjectUpdateScreen(
             errorMessage = "ID proyek tidak valid"
         }
     }
+
+
 
     // Process project data when received
     LaunchedEffect(responseById.value) {
@@ -389,7 +391,7 @@ fun ManagerProjectUpdateScreen(
     }
 
     // Handle update response
-    when (val result = responseUpdate.value) {
+    when (val result = responseUpdate) {
         is NetworkResponse.LOADING -> {
             Column(
                 modifier = Modifier.fillMaxSize(),

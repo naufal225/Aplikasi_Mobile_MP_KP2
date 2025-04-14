@@ -49,7 +49,7 @@ fun ManagerProjectBuktiTaskScreen(
             }
             is NetworkResponse.SUCCESS -> {
                 managerViewModel.response_update_status_tugas.postValue(null)
-                Toast.makeText(context, "Berhasil ubah status tugas menjadi done", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Berhasil ubah status tugas", Toast.LENGTH_SHORT).show()
                 navController.navigate(Routes.ManagerProjectDetail.managerProjectDetailWithId(tugas!!.idProyek.toString()))
             }
             null -> {}

@@ -33,18 +33,19 @@ fun EmployeeProjectAddBuktiTugas(
     val context = LocalContext.current
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
-    val response = employeeViewModel.response_upload_bukti_tugas.observeAsState()
+    val response by employeeViewModel.response_upload_bukti_tugas.observeAsState()
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         selectedImageUri = uri
     }
 
     // 🔄 LaunchedEffect untuk response
-    LaunchedEffect(response.value) {
-        when (val result = response.value) {
+    LaunchedEffect(response) {
+        when (val result = response) {
             is NetworkResponse.SUCCESS -> {
                 Toast.makeText(context, "Berhasil upload bukti tugas", Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
+                employeeViewModel.response_upload_bukti_tugas.postValue(null)
             }
 
             is NetworkResponse.ERROR -> {

@@ -63,7 +63,7 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
 
     private val _response_tugas_by_id_tugas_with_bukti = MutableLiveData<NetworkResponse<TugasByIdTugasWithBuktiResponse>>()
 
-    private val _response_update_project = MutableLiveData<NetworkResponse<UpdateProjectResponse>>()
+    private val _response_update_project = MutableLiveData<NetworkResponse<UpdateProjectResponse>?>()
 
     private val _response_add_tugas = MutableLiveData<NetworkResponse<ProjectAddTaskResponse>>()
 
@@ -428,15 +428,21 @@ class ManagerViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             try {
                 val response = managerRepository.createNotification(notificationRequest)
+                Log.d("RES_CREATE_NOTIF", response.body().toString())
                 if (response.isSuccessful && response.body() != null) {
                     response.body()?.let {
                         _response_create_notif.postValue(NetworkResponse.SUCCESS(it))
                     }
+                    Log.d("RES_CREATE_NOTIF", response.body().toString())
                 } else {
                     _response_create_notif.postValue(NetworkResponse.ERROR("Gagal buat notifikasi"))
+                    Log.e("RES_CREATE_NOTIF", response.body().toString())
+
                 }
             } catch (e: Exception) {
                 _response_create_notif.postValue(NetworkResponse.ERROR(e.message ?: "Error"))
+                Log.e("RES_CREATE_CATCH_NOTIF", e.toString())
+                Log.e("RES_CREATE_CATCH_NOTIF", e.message.toString())
             }
         }
     }

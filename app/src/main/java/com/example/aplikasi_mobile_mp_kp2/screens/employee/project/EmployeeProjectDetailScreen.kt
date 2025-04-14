@@ -326,13 +326,15 @@ fun ProjectDetailContent(
                             }
 
                             "in-progress" -> {
-                                Button(
-                                    onClick = {
-                                        navController.navigate(Routes.EmployeeProjectAddBuktiTugas.employeeProjectAddBuktiTugas(selectedTask!!.id.toString()))
-                                    },
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text("Ajukan Bukti Selesai")
+                                if(proyek.status == "in-progress") {
+                                    Button(
+                                        onClick = {
+                                            navController.navigate(Routes.EmployeeProjectAddBuktiTugas.employeeProjectAddBuktiTugas(selectedTask!!.id.toString()))
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text("Ajukan Bukti Selesai")
+                                    }
                                 }
                             }
 

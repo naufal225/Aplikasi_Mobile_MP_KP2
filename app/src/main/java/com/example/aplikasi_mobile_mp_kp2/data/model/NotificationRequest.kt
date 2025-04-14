@@ -13,6 +13,6 @@ data class NotificationRequest(
     val target: String, // "karyawan" atau "divisi"
 
     @SerializedName("id_target")
-    val idTarget: Int
+    val id_target: Int
 )
 
