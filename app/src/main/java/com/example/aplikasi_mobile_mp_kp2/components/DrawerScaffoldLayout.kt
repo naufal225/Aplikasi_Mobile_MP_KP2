@@ -83,7 +83,12 @@ fun DrawerScaffoldLayout(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(title) },
+                    title = {
+                        Image(
+                            painter = painterResource(R.drawable.logo_grafit),
+                            contentDescription = ""
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch { drawerState.open() }
