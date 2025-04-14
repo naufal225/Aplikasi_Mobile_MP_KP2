@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,6 +59,9 @@ fun ManagerProyekScreen(
     val context = LocalContext.current
 
     val statusTabs = listOf("pending", "in-progress", "waiting_for_review", "done")
+    val tabItems = listOf("Pending", "In Progress", "Waiting Review", "Done")
+
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
         managerViewModel.getDataAllProyek()
@@ -70,12 +74,15 @@ fun ManagerProyekScreen(
         Spacer(Modifier.height(8.dp))
 
         // Tab Bar untuk status proyek
-        TabRow(selectedTabIndex = statusTabs.indexOf(selectedStatus)) {
-            statusTabs.forEachIndexed { index, status ->
+        TabRow(selectedTabIndex = selectedTabIndex) {
+            tabItems.forEachIndexed { index, title ->
                 Tab(
-                    selected = selectedStatus == status,
-                    onClick = { selectedStatus = status },
-                    text = { Text(status.replace("-", " ").replace("_", " ").capitalize()) }
+                    selected = selectedTabIndex == index,
+                    onClick = {
+                        selectedTabIndex = index
+                        selectedStatus = title
+                              },
+                    text = { Text(title) }
                 )
             }
         }
@@ -103,16 +110,23 @@ fun ManagerProyekScreen(
             }
             is NetworkResponse.SUCCESS -> {
                 val data = (proyekList as NetworkResponse.SUCCESS<ProyekProgressResponse>).data.data.proyek
-                val filtered = data.filter { it.status == selectedStatus }
 
-                if (filtered.isEmpty()) {
+                val filteredProyek = when (selectedTabIndex) {
+                    0 -> data.filter { it.status == "pending" }
+                    1 -> data.filter { it.status == "in-progress" }
+                    2 -> data.filter { it.status == "waiting_for_review" }
+                    3 -> data.filter { it.status == "done" }
+                    else -> data
+                }
+
+                if (filteredProyek.isEmpty()) {
                     Text("Tidak ada proyek dengan status '$selectedStatus'")
                 } else {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
-                        items(filtered) { proyek ->
+                        items(filteredProyek) { proyek ->
                             ElevatedCard(
                                 modifier = Modifier
                                     .fillMaxWidth()
