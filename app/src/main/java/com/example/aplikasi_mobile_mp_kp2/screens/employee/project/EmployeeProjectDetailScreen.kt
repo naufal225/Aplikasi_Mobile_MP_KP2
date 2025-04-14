@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -28,6 +30,10 @@ import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.data.remote.SharedPrefsManager
 import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
+
+// Define a dark gray color for consistent use throughout the UI
+private val DarkGray = Color(0xFF333333)
+private val LightGray = Color(0xFFF5F5F5)
 
 @Composable
 fun EmployeeProjectDetailScreen(
@@ -71,11 +77,15 @@ fun EmployeeProjectDetailScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .background(Color.White)
             .padding(16.dp)
     ) {
         when (response) {
             is NetworkResponse.LOADING -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.Black
+                )
             }
 
             is NetworkResponse.SUCCESS -> {
@@ -87,38 +97,50 @@ fun EmployeeProjectDetailScreen(
                             idUser = idUser!!,
                             proyek = proyek,
                             listTugas = listTugas,
-                            navController,
-                            managerViewModel,
+                            navController = navController,
+                            managerViewModel = managerViewModel,
                         )
                     }
 
                     is NetworkResponse.LOADING -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                            color = Color.Black
+                        )
                     }
 
                     is NetworkResponse.ERROR -> {
                         Text(
                             text = (tugasResponse as NetworkResponse.ERROR).message ?: "Gagal memuat tugas",
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier.align(Alignment.Center),
+                            color = Color.Black
                         )
                     }
 
                     else -> {
-                        Text("Tidak ada data tugas", modifier = Modifier.align(Alignment.Center))
+                        Text(
+                            "Tidak ada data tugas",
+                            modifier = Modifier.align(Alignment.Center),
+                            color = Color.Black
+                        )
                     }
                 }
-
             }
 
             is NetworkResponse.ERROR -> {
                 Text(
                     text = (response as NetworkResponse.ERROR).message ?: "Terjadi kesalahan",
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.Black
                 )
             }
 
             else -> {
-                Text("Tidak ada data", modifier = Modifier.align(Alignment.Center))
+                Text(
+                    "Tidak ada data",
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.Black
+                )
             }
         }
     }
@@ -144,7 +166,7 @@ fun ProjectDetailContent(
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        // Header with project info and update button
+        // Header with project info
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -152,30 +174,58 @@ fun ProjectDetailContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(proyek.namaProyek, style = MaterialTheme.typography.headlineSmall)
-
+            Text(
+                proyek.namaProyek,
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
+            )
         }
 
-        Text("Status: ${proyek.status}")
+        Text(
+            "Status: ${proyek.status}",
+            color = DarkGray
+        )
+
         LinearProgressIndicator(
             progress = proyek.progress / 100f,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(vertical = 8.dp),
+            color = Color.Black,
+            trackColor = LightGray
         )
-        Text("Progress: ${proyek.progress}%", modifier = Modifier.align(Alignment.End))
+
+        Text(
+            "Progress: ${proyek.progress}%",
+            modifier = Modifier.align(Alignment.End),
+            color = Color.Black
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Tab tugas
         val tabItems = listOf("Pending", "In Progress", "Waiting Review", "Done")
 
-        TabRow(selectedTabIndex = selectedTabIndex) {
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            containerColor = LightGray,
+            contentColor = Color.Black,
+            indicator = { /* Remove default indicator */ }
+        ) {
             tabItems.forEachIndexed { index, title ->
                 Tab(
                     selected = selectedTabIndex == index,
                     onClick = { selectedTabIndex = index },
-                    text = { Text(title) }
+                    text = {
+                        Text(
+                            title,
+                            color = if (selectedTabIndex == index) Color.Black else DarkGray
+                        )
+                    },
+                    modifier = Modifier.background(
+                        if (selectedTabIndex == index) Color.White else LightGray
+                    )
                 )
             }
         }
@@ -191,14 +241,18 @@ fun ProjectDetailContent(
         }
 
         if (filteredTugas.isEmpty()) {
-            Text("Tidak ada tugas", modifier = Modifier.padding(16.dp))
+            Text(
+                "Tidak ada tugas",
+                modifier = Modifier.padding(16.dp),
+                color = DarkGray
+            )
         } else {
             filteredTugas.forEach { tugas ->
                 val isUserSTask = idUser == tugas.idKaryawan.toString()
-                val colors = if (isUserSTask) {
-                    CardDefaults.cardColors(containerColor = Color(0xFF4CAF50)) // Warna hijau
+                val cardColor = if (isUserSTask) {
+                    Color(0xFF4CAF50).copy(alpha = 0.2f) // Lighter green
                 } else {
-                    CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    LightGray
                 }
 
                 Card(
@@ -209,7 +263,9 @@ fun ProjectDetailContent(
                             selectedTask = tugas
                             showTaskDialog = true
                         },
-                    colors = colors
+                    colors = CardDefaults.cardColors(
+                        containerColor = cardColor
+                    )
                 ) {
                     Row(
                         modifier = Modifier
@@ -218,14 +274,18 @@ fun ProjectDetailContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(tugas.namaTugas, style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            tugas.namaTugas,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Black
+                        )
 
                         val statusColor = when (tugas.status) {
-                            "pending" -> MaterialTheme.colorScheme.tertiary
-                            "in-progress" -> MaterialTheme.colorScheme.primary
-                            "waiting_for_review" -> MaterialTheme.colorScheme.secondary
-                            "done" -> MaterialTheme.colorScheme.primaryContainer
-                            else -> MaterialTheme.colorScheme.outline
+                            "pending" -> Color.Black.copy(alpha = 0.5f)
+                            "in-progress" -> Color.Black
+                            "waiting_for_review" -> DarkGray
+                            "done" -> Color.Black
+                            else -> DarkGray.copy(alpha = 0.5f)
                         }
 
                         Box(
@@ -236,12 +296,11 @@ fun ProjectDetailContent(
                     }
                 }
             }
-
         }
     }
 
     if (showTaskDialog && selectedTask != null) {
-        val isUserSTask = selectedTask!!.idKaryawan .toString() == idUser
+        val isUserSTask = selectedTask!!.idKaryawan.toString() == idUser
         Dialog(
             onDismissRequest = { showTaskDialog = false },
             properties = DialogProperties(
@@ -253,14 +312,17 @@ fun ProjectDetailContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                )
             ) {
                 Column(
                     modifier = Modifier
                         .padding(24.dp)
                         .fillMaxWidth()
                 ) {
-                    // Header with task name and edit button
+                    // Header with task name
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -269,10 +331,10 @@ fun ProjectDetailContent(
                         Text(
                             selectedTask!!.namaTugas,
                             style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold
                         )
-
-
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -280,21 +342,30 @@ fun ProjectDetailContent(
                     Column (
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Text("Status: ${selectedTask!!.status.replace("_", " ").replace("-"," ").capitalize()}", style = MaterialTheme.typography.labelLarge)
+                        Text(
+                            "Status: ${selectedTask!!.status.replace("_", " ").replace("-"," ").capitalize()}",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = DarkGray
+                        )
                         Text(
                             "Penanggung Jawab: ${selectedTask!!.karyawan.nama}",
                             style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary
+                            color = Color.Black
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Text("Deskripsi:", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        "Deskripsi:",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.Black
+                    )
                     Text(
                         selectedTask!!.deskripsiTugas ?: "Tidak ada deskripsi",
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 4.dp),
+                        color = DarkGray
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -302,7 +373,7 @@ fun ProjectDetailContent(
                     Text(
                         "Tenggat Waktu: ${selectedTask!!.tenggatWaktu}",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary
+                        color = DarkGray
                     )
 
                     // Spacer untuk pisah dengan button bawah
@@ -317,9 +388,12 @@ fun ProjectDetailContent(
                                         managerViewModel.updateStatusTugas(selectedTask!!.id, UpdateStatusTaskAndProjectRequest("in-progress"))
                                         managerViewModel.response_update_status_tugas.postValue(null)
                                         Toast.makeText(context, "Berhasil buat tugas in-progress", Toast.LENGTH_SHORT).show()
-
                                     },
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Black,
+                                        contentColor = Color.White
+                                    )
                                 ) {
                                     Text("Buat In-Progress")
                                 }
@@ -331,20 +405,33 @@ fun ProjectDetailContent(
                                         onClick = {
                                             navController.navigate(Routes.EmployeeProjectAddBuktiTugas.employeeProjectAddBuktiTugas(selectedTask!!.id.toString()))
                                         },
-                                        modifier = Modifier.fillMaxWidth()
+                                        modifier = Modifier.fillMaxWidth(),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.Black,
+                                            contentColor = Color.White
+                                        )
                                     ) {
                                         Text("Ajukan Bukti Selesai")
                                     }
                                 }
                             }
-
-
                         }
                     }
 
+                    // Add a dismiss button
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = { showTaskDialog = false },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = DarkGray,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Tutup")
+                    }
                 }
             }
         }
     }
-
 }

@@ -1,4 +1,4 @@
-package com.example.aplikasi_mobile_mp_kp2.screens.employee.profile
+package com.example.aplikasi_mobile_mp_kp2.screens.manager.profile
 
 import android.net.Uri
 import android.util.Log
@@ -51,6 +51,10 @@ import com.example.aplikasi_mobile_mp_kp2.data.remote.RetrofitInstance
 import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.AuthViewModel
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModel
+import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
+
+// Define a dark gray color for consistent use throughout the UI
+private val DarkGray = Color(0xFF333333)
 
 @Composable
 fun EmployeeProfileScreen(
@@ -118,7 +122,7 @@ fun EmployeeProfileScreen(
                     Log.e("ERROR_LOGOUT", it.message)
                 }
                 NetworkResponse.LOADING -> {
-
+                    // Loading state
                 }
                 is NetworkResponse.SUCCESS -> {
                     navController.navigate(Routes.AuthGraph.route) {
@@ -126,7 +130,6 @@ fun EmployeeProfileScreen(
                         launchSingleTop = true
                     }
                     authViewModel.logout_result.postValue(null)
-
                 }
             }
         }
@@ -134,8 +137,13 @@ fun EmployeeProfileScreen(
 
     // Loader
     if (karyawan.value == null) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Color.Black)
         }
         return
     }
@@ -145,26 +153,41 @@ fun EmployeeProfileScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(Color.White)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            model = RetrofitInstance.BASE_URL_STORAGE + data.urlFotoProfile,
+            model = RetrofitInstance.BASE_URL_STORAGE + (data.urlFotoProfile ?: ""),
             contentDescription = "Foto Profil",
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
-                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
+                .border(2.dp, Color.Black, CircleShape),
             contentScale = ContentScale.Crop
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = data.namaLengkap, style = MaterialTheme.typography.titleMedium)
-        Text(text = data.email, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+        Text(
+            text = data.namaLengkap,
+            style = MaterialTheme.typography.titleMedium,
+            color = Color.Black
+        )
+        Text(
+            text = data.email,
+            style = MaterialTheme.typography.bodySmall,
+            color = DarkGray
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { launcher.launch("image/*") }) {
+        Button(
+            onClick = { launcher.launch("image/*") },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black,
+                contentColor = Color.White
+            )
+        ) {
             Icon(Icons.Default.PhotoCamera, contentDescription = "Ganti Foto")
             Spacer(modifier = Modifier.width(8.dp))
             Text("Ganti Foto")
@@ -184,7 +207,11 @@ fun EmployeeProfileScreen(
             onClick = {
                 authViewModel.logout()
             },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = DarkGray,
+                contentColor = Color.White
+            ),
+            modifier = Modifier.fillMaxWidth(0.7f)
         ) {
             Icon(Icons.Default.Logout, contentDescription = "Logout")
             Spacer(modifier = Modifier.width(8.dp))
@@ -192,21 +219,27 @@ fun EmployeeProfileScreen(
         }
     }
 }
-
-
-@Composable
-fun ProfileField(label: String, value: String) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 4.dp)) {
-        Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFF0F0F0), shape = RoundedCornerShape(6.dp))
-                .padding(8.dp)
-        )
-    }
-}
+//
+//@Composable
+//fun ProfileField(label: String, value: String) {
+//    Column(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(vertical = 4.dp)
+//    ) {
+//        Text(
+//            text = label,
+//            style = MaterialTheme.typography.labelSmall,
+//            color = DarkGray
+//        )
+//        Text(
+//            text = value,
+//            style = MaterialTheme.typography.bodyMedium,
+//            color = Color.Black,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .background(Color(0xFFF5F5F5), shape = RoundedCornerShape(6.dp))
+//                .padding(12.dp)
+//        )
+//    }
+//}

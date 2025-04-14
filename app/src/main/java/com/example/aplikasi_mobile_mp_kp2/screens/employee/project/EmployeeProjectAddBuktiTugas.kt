@@ -5,23 +5,31 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CloudUpload
+import androidx.compose.material.icons.outlined.Image
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toFile
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.aplikasi_mobile_mp_kp2.data.model.NotificationRequest
 import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModel
-import java.io.File
+
+// Define a dark gray color for consistent use throughout the UI
+private val DarkGray = Color(0xFF333333)
+private val LightGray = Color(0xFFF5F5F5)
 
 @Composable
 fun EmployeeProjectAddBuktiTugas(
@@ -32,6 +40,7 @@ fun EmployeeProjectAddBuktiTugas(
 ) {
     val context = LocalContext.current
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
 
     val response by employeeViewModel.response_upload_bukti_tugas.observeAsState()
 
@@ -43,55 +52,163 @@ fun EmployeeProjectAddBuktiTugas(
     LaunchedEffect(response) {
         when (val result = response) {
             is NetworkResponse.SUCCESS -> {
+                isLoading = false
                 Toast.makeText(context, "Berhasil upload bukti tugas", Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
                 employeeViewModel.response_upload_bukti_tugas.postValue(null)
             }
 
             is NetworkResponse.ERROR -> {
+                isLoading = false
                 Toast.makeText(context, "Gagal: ${result.message}", Toast.LENGTH_SHORT).show()
             }
 
-            else -> {}
+            is NetworkResponse.LOADING -> {
+                isLoading = true
+            }
+
+            else -> {
+                isLoading = false
+            }
         }
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(Color.White)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Upload Bukti Tugas", style = MaterialTheme.typography.headlineSmall)
-
-        Button(onClick = {
-            launcher.launch("image/*")
-        }) {
-            Text("Pilih Gambar")
-        }
-
-        selectedImageUri?.let { uri ->
-            Image(
-                painter = rememberAsyncImagePainter(uri),
-                contentDescription = "Preview",
-                modifier = Modifier
-                    .size(200.dp)
-                    .padding(8.dp)
+        // Header
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Black
+            )
+        ) {
+            Text(
+                "Upload Bukti Tugas",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier.padding(16.dp)
             )
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Image selection area
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(LightGray)
+                .border(
+                    width = 1.dp,
+                    color = DarkGray.copy(alpha = 0.3f),
+                    shape = RoundedCornerShape(12.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            if (selectedImageUri != null) {
+                Image(
+                    painter = rememberAsyncImagePainter(selectedImageUri),
+                    contentDescription = "Preview",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(12.dp))
+                )
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Image,
+                        contentDescription = "Image",
+                        tint = DarkGray,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        "Belum ada gambar dipilih",
+                        color = DarkGray,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
+
+        // Select image button
+        Button(
+            onClick = {
+                launcher.launch("image/*")
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = DarkGray,
+                contentColor = Color.White
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Image,
+                contentDescription = "Select Image",
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Pilih Gambar")
+        }
+
+        // Upload button
         Button(
             onClick = {
                 selectedImageUri?.let { uri ->
                     employeeViewModel.uploadBuktiTugas(fileUri = uri, idTugas = taskId)
-
                 } ?: Toast.makeText(context, "Pilih gambar dulu!", Toast.LENGTH_SHORT).show()
             },
-            enabled = selectedImageUri != null,
-            shape = RoundedCornerShape(10.dp)
+            enabled = selectedImageUri != null && !isLoading,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black,
+                contentColor = Color.White,
+                disabledContainerColor = Color.Gray.copy(alpha = 0.5f),
+                disabledContentColor = Color.White
+            ),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Upload")
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Uploading...")
+            } else {
+                Icon(
+                    imageVector = Icons.Outlined.CloudUpload,
+                    contentDescription = "Upload",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Upload Bukti")
+            }
+        }
+
+        // Back button
+        Button(
+            onClick = {
+                navController.popBackStack()
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = DarkGray,
+                contentColor = Color.White
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Kembali")
         }
     }
 }

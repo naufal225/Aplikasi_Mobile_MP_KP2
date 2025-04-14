@@ -9,10 +9,10 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.aplikasi_mobile_mp_kp2.components.DrawerScaffoldLayout
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.home.EmployeeHomeScreen
-import com.example.aplikasi_mobile_mp_kp2.screens.employee.profile.EmployeeProfileScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectAddBuktiTugas
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectDetailScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.employee.project.EmployeeProjectScreen
+import com.example.aplikasi_mobile_mp_kp2.screens.manager.profile.EmployeeProfileScreen
 import com.example.aplikasi_mobile_mp_kp2.screens.manager.profile.ManagerProfileScreen
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.AuthViewModel
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.employee.EmployeeViewModel

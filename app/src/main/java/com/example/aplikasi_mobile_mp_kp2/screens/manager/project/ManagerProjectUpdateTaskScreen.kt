@@ -2,16 +2,20 @@ package com.example.aplikasi_mobile_mp_kp2.screens.manager.project
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -24,6 +28,9 @@ import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
+// Define a dark gray color for consistent use throughout the UI
+private val DarkGray = Color(0xFF333333)
+private val LightGray = Color(0xFFF5F5F5)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -145,11 +152,17 @@ fun ManagerProjectUpdateTaskScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(Color.White)
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text("Edit Data Tugas", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            "Edit Data Tugas",
+            style = MaterialTheme.typography.headlineSmall,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold
+        )
 
         OutlinedTextField(
             value = namaTugas,
@@ -157,10 +170,16 @@ fun ManagerProjectUpdateTaskScreen(
                 namaTugas = it
                 errorMessage = null
             },
-            label = { Text("Nama Tugas") },
+            label = { Text("Nama Tugas", color = DarkGray) },
             modifier = Modifier.fillMaxWidth(),
             isError = namaTugas.isBlank(),
-            singleLine = true
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                unfocusedTextColor = com.example.aplikasi_mobile_mp_kp2.screens.login.DarkGray,
+                focusedTextColor = Color.Black,
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White
+            )
         )
 
         OutlinedTextField(
@@ -169,19 +188,29 @@ fun ManagerProjectUpdateTaskScreen(
                 deskripsiTugas = it
                 errorMessage = null
             },
-            label = { Text("Deskripsi Tugas") },
+            label = { Text("Deskripsi Tugas", color = DarkGray) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
             maxLines = 5,
-            isError = deskripsiTugas.isBlank()
+            isError = deskripsiTugas.isBlank(),
+            colors = TextFieldDefaults.colors(
+                unfocusedTextColor = com.example.aplikasi_mobile_mp_kp2.screens.login.DarkGray,
+                focusedTextColor = Color.Black,
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White
+            )
         )
 
         Column {
-            Text("Tenggat Waktu", fontWeight = FontWeight.Medium)
+            Text(
+                "Tenggat Waktu",
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.small,
-                color = MaterialTheme.colorScheme.surfaceVariant
+                color = LightGray
             ) {
                 Row(
                     modifier = Modifier
@@ -192,18 +221,26 @@ fun ManagerProjectUpdateTaskScreen(
                 ) {
                     Text(
                         text = formattedDate.ifEmpty { "Pilih tenggat waktu" },
-                        color = if (formattedDate.isNotEmpty()) MaterialTheme.colorScheme.onSurfaceVariant
-                        else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                        color = if (formattedDate.isNotEmpty()) Color.Black
+                        else DarkGray.copy(alpha = 0.6f)
                     )
                     IconButton(onClick = { showDatePicker = true }) {
-                        Icon(Icons.Outlined.CalendarMonth, contentDescription = "Pilih Tanggal")
+                        Icon(
+                            Icons.Outlined.CalendarMonth,
+                            contentDescription = "Pilih Tanggal",
+                            tint = Color.Black
+                        )
                     }
                 }
             }
         }
 
         Column {
-            Text("Karyawan", fontWeight = FontWeight.Medium)
+            Text(
+                "Karyawan",
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
             ExposedDropdownMenuBox(
                 expanded = karyawanExpanded,
                 onExpandedChange = { karyawanExpanded = !karyawanExpanded },
@@ -213,27 +250,54 @@ fun ManagerProjectUpdateTaskScreen(
                     value = selectedKaryawan?.nama ?: "",
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Pilih Karyawan") },
+                    label = { Text("Pilih Karyawan", color = DarkGray) },
                     trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = karyawanExpanded)
+                        Icon(
+                            if (karyawanExpanded)
+                                Icons.Outlined.KeyboardArrowUp
+                            else
+                                Icons.Outlined.KeyboardArrowDown,
+                            contentDescription = "Expand dropdown",
+                            tint = Color.Black
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor()
+                        .menuAnchor(),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedTextColor = com.example.aplikasi_mobile_mp_kp2.screens.login.DarkGray,
+                        focusedTextColor = Color.Black,
+                        unfocusedContainerColor = Color.White,
+                        focusedContainerColor = Color.White
+                    )
                 )
 
                 ExposedDropdownMenu(
                     expanded = karyawanExpanded,
-                    onDismissRequest = { karyawanExpanded = false }
+                    onDismissRequest = { karyawanExpanded = false },
+                    modifier = Modifier.background(Color.White)
                 ) {
                     karyawanList.forEach { karyawan ->
                         DropdownMenuItem(
-                            text = { Text(karyawan.nama) },
+                            text = {
+                                Text(
+                                    karyawan.nama,
+                                    color = Color.Black
+                                )
+                            },
                             onClick = {
                                 selectedKaryawan = karyawan
                                 karyawanExpanded = false
                                 errorMessage = null
-                            }
+                            },
+                            colors = MenuDefaults.itemColors(
+                                textColor = Color.Black,
+                                leadingIconColor = Color.Black,
+                                trailingIconColor = Color.Black,
+                                disabledTextColor = DarkGray,
+                                disabledLeadingIconColor = DarkGray,
+                                disabledTrailingIconColor = DarkGray
+                            )
                         )
                     }
                 }
@@ -243,7 +307,7 @@ fun ManagerProjectUpdateTaskScreen(
         if (errorMessage != null) {
             Text(
                 text = errorMessage!!,
-                color = MaterialTheme.colorScheme.error,
+                color = Color.Red,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -268,7 +332,11 @@ fun ManagerProjectUpdateTaskScreen(
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black,
+                contentColor = Color.White
+            )
         ) {
             Text("Edit Tugas")
         }
@@ -291,16 +359,56 @@ fun ManagerProjectUpdateTaskScreen(
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                TextButton(onClick = {
-                    tenggatWaktuMillis = datePickerState.selectedDateMillis
-                    showDatePicker = false
-                }) { Text("OK") }
+                TextButton(
+                    onClick = {
+                        tenggatWaktuMillis = datePickerState.selectedDateMillis
+                        showDatePicker = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text("OK")
+                }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Batal") }
-            }
+                TextButton(
+                    onClick = { showDatePicker = false },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = DarkGray
+                    )
+                ) {
+                    Text("Batal")
+                }
+            },
+            colors = DatePickerDefaults()
         ) {
-            DatePicker(state = datePickerState)
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults()
+            )
         }
     }
 }
+
+// Custom DatePickerDefaults function to create consistent date picker colors
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DatePickerDefaults() = DatePickerDefaults.colors(
+    containerColor = Color.White,
+    titleContentColor = Color.Black,
+    headlineContentColor = Color.Black,
+    weekdayContentColor = DarkGray,
+    subheadContentColor = Color.Black,
+    yearContentColor = Color.Black,
+    currentYearContentColor = Color.White,
+    selectedYearContentColor = Color.White,
+    selectedYearContainerColor = Color.Black,
+    dayContentColor = Color.Black,
+    selectedDayContentColor = Color.White,
+    selectedDayContainerColor = Color.Black,
+    todayContentColor = Color.Black,
+    todayDateBorderColor = Color.Black,
+    dayInSelectionRangeContentColor = Color.Black,
+    dayInSelectionRangeContainerColor = LightGray
+)

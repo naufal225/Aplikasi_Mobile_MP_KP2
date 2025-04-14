@@ -1,16 +1,22 @@
 package com.example.aplikasi_mobile_mp_kp2.navigation
 
+import android.graphics.drawable.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Task
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
 import com.example.aplikasi_mobile_mp_kp2.data.model.Proyek
 import okhttp3.Route
 
-sealed class Routes(val route: String, val label: String? = null) {
+sealed class Routes(val route: String, val label: String? = null, val icon: ImageVector? = null) {
     data object Login : Routes("login")
 
     // Employee
-    data object EmployeeHome : Routes("employee_home", "Beranda")
+    data object EmployeeHome : Routes("employee_home", "Beranda", Icons.Default.Home)
 
-    data object EmployeeProjects : Routes("employee_projects", "Projek")
+    data object EmployeeProjects : Routes("employee_projects", "Projek", Icons.Default.Task)
 
     data object EmployeeProjectDetail : Routes("employee_project_detail" + "/{projectId}", "Detail Projek") {
         fun employeeProjectDetailWithId(projectId: String): String {
@@ -24,7 +30,7 @@ sealed class Routes(val route: String, val label: String? = null) {
         }
     }
 
-    data object EmployeeProfile : Routes("employee_profile_screen","Profil")
+    data object EmployeeProfile : Routes("employee_profile_screen","Profil", Icons.Default.Person)
 
 
     data object EmployeeTaskList : Routes("employee_tasks", "Tugas")
@@ -33,8 +39,8 @@ sealed class Routes(val route: String, val label: String? = null) {
 
 
     // Manager
-    data object ManagerHome : Routes("manager_home", "Beranda")
-    data object ManagerProjects : Routes("manager_projects", "Projek")
+    data object ManagerHome : Routes("manager_home", "Beranda", Icons.Default.Home)
+    data object ManagerProjects : Routes("manager_projects", "Projek", Icons.Default.Task)
 
     data object ManagerProjectDetail : Routes("manager_project_detail" + "/{projectId}", "Detail Projek") {
         fun managerProjectDetailWithId(projectId: String): String {
@@ -68,7 +74,7 @@ sealed class Routes(val route: String, val label: String? = null) {
         }
     }
 
-    data object ManagerProfile : Routes("manager_profile_screen","Profil")
+    data object ManagerProfile : Routes("manager_profile_screen","Profil", Icons.Default.Person)
 
     data object ManagerReport : Routes("manager_report", "Laporan")
 

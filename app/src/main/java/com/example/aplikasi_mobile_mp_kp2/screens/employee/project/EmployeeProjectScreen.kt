@@ -1,6 +1,7 @@
 package com.example.aplikasi_mobile_mp_kp2.screens.employee.project
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,11 +33,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -46,34 +49,66 @@ import com.example.aplikasi_mobile_mp_kp2.data.remote.NetworkResponse
 import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 
+// Define a dark gray color for consistent use throughout the UI
+private val DarkGray = Color(0xFF333333)
+private val LightGray = Color(0xFFF5F5F5)
+
 @Composable
 fun EmployeeProjectScreen(
-    managerViewModel: ManagerViewModel, // Gunakan ViewModel yang sama jika data diambil dari endpoint yang sama
+    managerViewModel: ManagerViewModel,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     val proyekList by managerViewModel.response_all_proyek.observeAsState()
     var selectedStatus by remember { mutableStateOf("in-progress") }
+
     val statusTabs = listOf("pending", "in-progress", "waiting_for_review", "done")
+    val tabItems = listOf("Pending", "In Progress", "Waiting Review", "Done")
+
+    var selectedTabIndex by remember { mutableIntStateOf(1) } // Default to "In Progress"
 
     LaunchedEffect(Unit) {
         managerViewModel.getDataAllProyek()
     }
 
-    Column(modifier = modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(16.dp)
+    ) {
+        Text(
+            "Proyek Divisi",
+            style = MaterialTheme.typography.headlineSmall,
+            color = Color.Black,
+            fontWeight = FontWeight.Bold
+        )
 
-        Text("Proyek Divisi", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(8.dp))
 
         // Tab Bar untuk status proyek
-        TabRow(selectedTabIndex = statusTabs.indexOf(selectedStatus)) {
-            statusTabs.forEachIndexed { _, status ->
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            containerColor = LightGray,
+            contentColor = Color.Black,
+            indicator = { /* Remove default indicator */ }
+        ) {
+            tabItems.forEachIndexed { index, title ->
                 Tab(
-                    selected = selectedStatus == status,
-                    onClick = { selectedStatus = status },
-                    text = { Text(status.replace("_", " ").capitalize()) }
+                    selected = selectedTabIndex == index,
+                    onClick = {
+                        selectedTabIndex = index
+                        selectedStatus = statusTabs[index]
+                    },
+                    text = {
+                        Text(
+                            title,
+                            color = if (selectedTabIndex == index) Color.Black else DarkGray
+                        )
+                    },
+                    modifier = Modifier.background(
+                        if (selectedTabIndex == index) Color.White else LightGray
+                    )
                 )
             }
         }
@@ -82,25 +117,41 @@ fun EmployeeProjectScreen(
 
         when (proyekList) {
             is NetworkResponse.LOADING -> {
-                Text("Memuat data proyek...")
+                Text(
+                    "Memuat data proyek...",
+                    color = DarkGray
+                )
             }
             is NetworkResponse.ERROR -> {
                 val res = proyekList
                 Log.e("EMPLOYEE_ALL_PROYEK", res.toString())
-                Text("Terjadi kesalahan: ${(proyekList as NetworkResponse.ERROR).message}")
+                Text(
+                    "Terjadi kesalahan: ${(proyekList as NetworkResponse.ERROR).message}",
+                    color = Color.Red
+                )
             }
             is NetworkResponse.SUCCESS -> {
                 val data = (proyekList as NetworkResponse.SUCCESS<ProyekProgressResponse>).data.data.proyek
-                val filtered = data.filter { it.status == selectedStatus }
 
-                if (filtered.isEmpty()) {
-                    Text("Tidak ada proyek dengan status '$selectedStatus'")
+                val filteredProyek = when (selectedTabIndex) {
+                    0 -> data.filter { it.status == "pending" }
+                    1 -> data.filter { it.status == "in-progress" }
+                    2 -> data.filter { it.status == "waiting_for_review" }
+                    3 -> data.filter { it.status == "done" }
+                    else -> data
+                }
+
+                if (filteredProyek.isEmpty()) {
+                    Text(
+                        "Tidak ada proyek dengan status '$selectedStatus'",
+                        color = DarkGray
+                    )
                 } else {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
-                        items(filtered) { proyek ->
+                        items(filteredProyek) { proyek ->
                             ElevatedCard(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -109,10 +160,11 @@ fun EmployeeProjectScreen(
                                     },
                                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
                                 colors = CardDefaults.elevatedCardColors(
-                                    containerColor = MaterialTheme.colorScheme.surface
+                                    containerColor = Color.White
                                 )
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
+                                    // Project header with name and status
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -121,36 +173,38 @@ fun EmployeeProjectScreen(
                                         Text(
                                             proyek.namaProyek,
                                             style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.primary,
+                                            color = Color.Black,
                                             fontWeight = FontWeight.Bold
                                         )
 
-                                        val statusColor = when(proyek.status.lowercase()) {
-                                            "selesai" -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
-                                            "dalam pengerjaan" -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
-                                            "tertunda" -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
-                                            else -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
+                                        // Status chip
+                                        val (statusColor, textColor) = when(proyek.status.lowercase()) {
+                                            "done" -> Color.Black to Color.White
+                                            "in-progress" -> DarkGray to Color.White
+                                            "pending" -> LightGray to Color.Black
+                                            else -> LightGray to DarkGray
                                         }
 
                                         Surface(
                                             shape = RoundedCornerShape(16.dp),
-                                            color = statusColor.first,
+                                            color = statusColor,
                                         ) {
                                             Text(
                                                 proyek.status,
                                                 style = MaterialTheme.typography.labelSmall,
                                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                                color = statusColor.second
+                                                color = textColor
                                             )
                                         }
                                     }
 
                                     Spacer(modifier = Modifier.height(8.dp))
 
+                                    // Description with limited lines
                                     Text(
                                         "Deskripsi:",
                                         style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        color = DarkGray,
                                         fontWeight = FontWeight.Medium
                                     )
                                     Text(
@@ -158,11 +212,13 @@ fun EmployeeProjectScreen(
                                         style = MaterialTheme.typography.bodySmall,
                                         maxLines = 2,
                                         overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier.padding(bottom = 8.dp)
+                                        modifier = Modifier.padding(bottom = 8.dp),
+                                        color = Color.Black
                                     )
 
                                     Spacer(modifier = Modifier.height(4.dp))
 
+                                    // Progress indicator if available
                                     if (proyek.progress != null) {
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
@@ -173,25 +229,27 @@ fun EmployeeProjectScreen(
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .height(6.dp),
-                                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                                color = MaterialTheme.colorScheme.primary
+                                                trackColor = LightGray,
+                                                color = Color.Black
                                             )
                                             Text(
                                                 "${proyek.progress}%",
                                                 style = MaterialTheme.typography.labelSmall,
                                                 modifier = Modifier.padding(start = 8.dp),
-                                                color = MaterialTheme.colorScheme.primary
+                                                color = Color.Black
                                             )
                                         }
 
                                         Spacer(modifier = Modifier.height(8.dp))
                                     }
 
+                                    // Footer with deadline and other metadata
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceBetween,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
+                                        // Deadline with icon
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
@@ -199,20 +257,21 @@ fun EmployeeProjectScreen(
                                                 imageVector = Icons.Outlined.CalendarToday,
                                                 contentDescription = "Deadline",
                                                 modifier = Modifier.size(16.dp),
-                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                                tint = DarkGray
                                             )
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text(
                                                 "Deadline: ${proyek.tenggatWaktu}",
                                                 style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                color = DarkGray
                                             )
                                         }
 
+                                        // Arrow indicator for navigation
                                         Icon(
                                             imageVector = Icons.Outlined.ChevronRight,
                                             contentDescription = "View Details",
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            tint = DarkGray
                                         )
                                     }
                                 }
@@ -221,7 +280,7 @@ fun EmployeeProjectScreen(
                     }
                 }
             }
-            else -> Text("Belum ada data.")
+            else -> Text("Belum ada data.", color = DarkGray)
         }
     }
 }

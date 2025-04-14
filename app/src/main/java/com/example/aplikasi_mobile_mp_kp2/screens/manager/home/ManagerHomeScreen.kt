@@ -41,6 +41,9 @@ import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 import kotlinx.coroutines.delay
 
+// Define a dark gray color
+private val DarkGray = Color(0xFF333333)
+
 @Composable
 fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = Modifier, navController: NavController) {
     val context = LocalContext.current
@@ -98,18 +101,20 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(Color.White)
             .verticalScroll(rememberScrollState())
             .padding(20.dp)
     ) {
         // Header
         Text(
             text = "👋 Selamat datang, $managerName",
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+            color = Color.Black
         )
         Text(
             text = "Divisi: $divisionName",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
+            color = DarkGray
         )
 
         Spacer(Modifier.height(20.dp))
@@ -130,7 +135,8 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
                     is NetworkResponse.ERROR -> "?"
                     else -> "-"
                 },
-                color = Color(0xFFD1C4E9), // soft purple
+                backgroundColor = Color.Black,
+                textColor = Color.White,
                 modifier = Modifier
                     .height(100.dp)
                     .weight(1f)
@@ -147,7 +153,8 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
                     is NetworkResponse.ERROR -> "?"
                     else -> "-"
                 },
-                color = Color(0xFFC8E6C9), // soft green
+                backgroundColor = DarkGray,
+                textColor = Color.White,
                 modifier = Modifier
                     .height(100.dp)
                     .weight(1f)
@@ -159,7 +166,8 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
         Text(
             text = "📣 Pemberitahuan:",
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            color = Color.Black
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -170,13 +178,14 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
                 shape = RoundedCornerShape(10.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8E9))
+                colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 notif.pesan?.let {
                     Text(
                         text = it,
                         modifier = Modifier.padding(12.dp),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Black
                     )
                 }
             }
@@ -185,11 +194,17 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
 }
 
 @Composable
-fun StatCard(title: String, value: String, color: Color, modifier: Modifier) {
+fun StatCard(
+    title: String,
+    value: String,
+    backgroundColor: Color,
+    textColor: Color,
+    modifier: Modifier
+) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = color),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Column(
@@ -198,11 +213,16 @@ fun StatCard(title: String, value: String, color: Color, modifier: Modifier) {
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
-            Text(title, style = MaterialTheme.typography.labelMedium)
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelMedium,
+                color = textColor
+            )
             Spacer(Modifier.height(6.dp))
             Text(
                 text = value,
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                color = textColor
             )
         }
     }
@@ -214,7 +234,7 @@ fun SectionHeader(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-        color = MaterialTheme.colorScheme.primary
+        color = Color.Black
     )
     Spacer(Modifier.height(10.dp))
 }
@@ -227,13 +247,14 @@ fun PrettyList(items: List<String>) {
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                colors = CardDefaults.cardColors(containerColor = DarkGray),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Text(
                     text = it,
                     modifier = Modifier.padding(14.dp),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White
                 )
             }
         }
