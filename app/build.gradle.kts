@@ -19,12 +19,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            resValue("string", "app_name", "Grafit: Manajemen Proyek KP 2")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            resValue("string", "app_name", "Grafit")
         }
     }
     compileOptions {

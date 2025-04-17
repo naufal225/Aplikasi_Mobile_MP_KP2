@@ -61,7 +61,7 @@ fun DrawerScaffoldLayout(
                                     contentDescription = route.label,
                                     tint = if (currentRoute == route.route) Color.White else Color.Black,
                                 )
-                                Text(route.label ?: route.route, modifier = Modifier.padding(horizontal = 18.dp))
+                                Text(route.label ?: route.route, modifier = Modifier.padding(horizontal = 18.dp), color = if(currentRoute == route.route) Color.White else Color.Black)
                             }
                         },
                         selected = currentRoute == route.route,

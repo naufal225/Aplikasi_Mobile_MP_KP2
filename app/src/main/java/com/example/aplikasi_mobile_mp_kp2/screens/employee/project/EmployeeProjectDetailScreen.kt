@@ -305,7 +305,8 @@ fun ProjectDetailContent(
             onDismissRequest = { showTaskDialog = false },
             properties = DialogProperties(
                 dismissOnBackPress = true,
-                dismissOnClickOutside = true
+                dismissOnClickOutside = true,
+                usePlatformDefaultWidth = true
             )
         ) {
             Card(
@@ -403,6 +404,7 @@ fun ProjectDetailContent(
                                 if(proyek.status == "in-progress") {
                                     Button(
                                         onClick = {
+                                            Log.d("ID_TASK:", selectedTask!!.id.toString() ?: "ga ada")
                                             navController.navigate(Routes.EmployeeProjectAddBuktiTugas.employeeProjectAddBuktiTugas(selectedTask!!.id.toString()))
                                         },
                                         modifier = Modifier.fillMaxWidth(),
