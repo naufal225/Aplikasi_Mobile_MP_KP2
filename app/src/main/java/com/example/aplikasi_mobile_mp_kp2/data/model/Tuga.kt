@@ -43,10 +43,21 @@ data class TugasWithBuktiResponse(
     val namaTugas: String,
     @SerializedName("status")
     val status: String,
-    @SerializedName("path_file_bukti_tugas")
-    val path_file_bukti_tugas: String,
+    @SerializedName("file_bukti_tugas")
+    val file_bukti_tugas: List<FileBuktiTugas>,
     @SerializedName("tenggat_waktu")
     val tenggatWaktu: String,
     @SerializedName("updated_at")
     val updatedAt: Any
+)
+
+data class FileBuktiTugas(
+    @SerializedName("id")
+    val id: Int,
+
+    @SerializedName("path_file")
+    val pathFile: String,
+
+    @SerializedName("created_at")
+    val createdAt: String
 )

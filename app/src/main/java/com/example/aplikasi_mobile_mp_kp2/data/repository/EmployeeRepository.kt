@@ -7,8 +7,8 @@ import okhttp3.MultipartBody
 
 class EmployeeRepository(private val employeeInterface: EmployeeInterface) {
 
-    suspend fun uploadBuktiTugas(idTugas: Int, file: MultipartBody.Part) =
-        employeeInterface.uploadBuktiTugas(idTugas, file)
+    suspend fun uploadBuktiTugas(idTugas: Int, files: List<MultipartBody.Part>) =
+        employeeInterface.uploadBuktiTugas(idTugas, files)
 
     suspend fun uploadFotoProfil(file: MultipartBody.Part) =
         employeeInterface.uploadFotoProfil(file)

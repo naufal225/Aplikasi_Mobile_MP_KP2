@@ -8,6 +8,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CloudUpload
@@ -39,13 +41,13 @@ fun EmployeeProjectAddBuktiTugas(
     navController: NavController
 ) {
     val context = LocalContext.current
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
 
     val response by employeeViewModel.response_upload_bukti_tugas.observeAsState()
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        selectedImageUri = uri
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
+        selectedImageUris = uris
     }
 
     // 🔄 LaunchedEffect untuk response
@@ -100,7 +102,7 @@ fun EmployeeProjectAddBuktiTugas(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Image selection area
-        Box(
+        LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp)
@@ -111,35 +113,18 @@ fun EmployeeProjectAddBuktiTugas(
                     color = DarkGray.copy(alpha = 0.3f),
                     shape = RoundedCornerShape(12.dp)
                 ),
-            contentAlignment = Alignment.Center
         ) {
-            if (selectedImageUri != null) {
+            items(selectedImageUris) { uri ->
                 Image(
-                    painter = rememberAsyncImagePainter(selectedImageUri),
-                    contentDescription = "Preview",
+                    painter = rememberAsyncImagePainter(uri),
+                    contentDescription = null,
                     modifier = Modifier
-                        .fillMaxSize()
+                        .padding(8.dp)
+                        .size(200.dp)
                         .clip(RoundedCornerShape(12.dp))
                 )
-            } else {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Image,
-                        contentDescription = "Image",
-                        tint = DarkGray,
-                        modifier = Modifier.size(48.dp)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        "Belum ada gambar dipilih",
-                        color = DarkGray,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
             }
+
         }
 
         // Select image button
@@ -165,11 +150,15 @@ fun EmployeeProjectAddBuktiTugas(
         // Upload button
         Button(
             onClick = {
-                selectedImageUri?.let { uri ->
-                    employeeViewModel.uploadBuktiTugas(fileUri = uri, idTugas = taskId)
-                } ?: Toast.makeText(context, "Pilih gambar dulu!", Toast.LENGTH_SHORT).show()
+                if (selectedImageUris.isNotEmpty()) {
+                    selectedImageUris.let { uri ->
+                        employeeViewModel.uploadBuktiTugas(fileUris = uri, idTugas = taskId)
+                    }
+                } else {
+                    Toast.makeText(context, "Pilih gambar dulu!", Toast.LENGTH_SHORT).show()
+                }
             },
-            enabled = selectedImageUri != null && !isLoading,
+            enabled = !isLoading && selectedImageUris.isNotEmpty(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black,
                 contentColor = Color.White,

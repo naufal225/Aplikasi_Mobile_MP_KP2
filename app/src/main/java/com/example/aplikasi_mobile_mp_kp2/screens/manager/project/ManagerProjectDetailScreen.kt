@@ -449,7 +449,7 @@ fun ProjectDetailContent(
                     // Spacer untuk pisah dengan button bawah
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    if(proyek.status != "done") {
+                    if(proyek.status == "in-progress") {
                         when (selectedTask!!.status) {
                             "pending" -> {
                                 Button(

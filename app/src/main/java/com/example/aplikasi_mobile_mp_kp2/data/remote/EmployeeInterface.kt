@@ -23,7 +23,7 @@ interface EmployeeInterface {
     @POST("karyawan/upload-bukti-tugas/{id}")
     suspend fun uploadBuktiTugas(
         @Path("id") idTugas: Int,
-        @Part file: MultipartBody.Part
+        @Part files: List<MultipartBody.Part>
     ): Response<UploadBuktiTugasResponse>
 
     @Multipart

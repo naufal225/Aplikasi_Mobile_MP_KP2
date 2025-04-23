@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.aplikasi_mobile_mp_kp2.data.model.KaryawanX
@@ -21,7 +20,6 @@ import com.example.aplikasi_mobile_mp_kp2.utils.FileUtil
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 
 class EmployeeViewModel(application: Application) : AndroidViewModel(application) {
@@ -47,32 +45,37 @@ class EmployeeViewModel(application: Application) : AndroidViewModel(application
     val response_data_user = _response_data_user
 
 
-    fun uploadBuktiTugas(idTugas: Int, fileUri: Uri) {
+    fun uploadBuktiTugas(idTugas: Int, fileUris: List<Uri>) {
         _response_upload_bukti_tugas.postValue(NetworkResponse.LOADING)
 
         viewModelScope.launch {
             try {
                 val context = getApplication<Application>().applicationContext
+                val multipartFiles = mutableListOf<MultipartBody.Part>()
 
-                val file = FileUtil.from(context, fileUri) // gunakan helper
-                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-                val multipart = MultipartBody.Part.createFormData("file", file.name, requestFile)
+                fileUris.forEach { uri ->
+                    val file = FileUtil.from(context, uri)
+                    val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                    val part = MultipartBody.Part.createFormData("files[]", file.name, requestFile)
+                    multipartFiles.add(part)
+                }
 
-                val response = employeeRepository.uploadBuktiTugas(idTugas, multipart)
+                val response = employeeRepository.uploadBuktiTugas(idTugas, multipartFiles)
 
                 if (response.isSuccessful && response.body() != null) {
                     _response_upload_bukti_tugas.postValue(NetworkResponse.SUCCESS(response.body()!!))
                 } else {
                     _response_upload_bukti_tugas.postValue(NetworkResponse.ERROR("Gagal mengunggah bukti."))
-                    Log.e("ERROR_FILE_UPLOAD", "Code: ${response.code()}, Message: ${response.message()}, ErrorBody: ${response.errorBody()?.string()}")
+                    Log.e("UPLOAD_ERROR", "Code: ${response.code()}, Message: ${response.message()}, Body: ${response.errorBody()?.string()}")
                 }
 
             } catch (e: Exception) {
                 _response_upload_bukti_tugas.postValue(NetworkResponse.ERROR("Error: ${e.message}"))
-                Log.e("ERROR_UPLOAD_FILE", "Exception saat upload", e)
+                Log.e("UPLOAD_EXCEPTION", "Exception saat upload", e)
             }
         }
     }
+
 
     fun getDataUser() {
         _response_data_user.postValue(NetworkResponse.LOADING)

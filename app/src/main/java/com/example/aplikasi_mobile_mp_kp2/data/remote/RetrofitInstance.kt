@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    val BASE = "http://10.227.36.182:8000/"
+    val BASE = "http://10.227.31.185:8000/"
     val BASE_URL = BASE + "api-mobile/"
     val BASE_URL_STORAGE = BASE + "storage/"
 
