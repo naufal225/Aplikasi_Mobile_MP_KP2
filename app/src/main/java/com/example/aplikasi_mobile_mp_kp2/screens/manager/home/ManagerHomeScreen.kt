@@ -40,6 +40,10 @@ import com.example.aplikasi_mobile_mp_kp2.data.remote.SharedPrefsManager
 import com.example.aplikasi_mobile_mp_kp2.navigation.Routes
 import com.example.aplikasi_mobile_mp_kp2.viewmodel.manager.ManagerViewModel
 import kotlinx.coroutines.delay
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 // Define a dark gray color
 private val DarkGray = Color(0xFF333333)
@@ -172,7 +176,7 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        listNotifState.value.forEach{ notif ->
+        listNotifState.value.forEach { notif ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -180,16 +184,44 @@ fun ManagerHomeScreen(managerViewModel: ManagerViewModel, modifier: Modifier = M
                 shape = RoundedCornerShape(10.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
-                notif.pesan?.let {
-                    Text(
-                        text = it,
-                        modifier = Modifier.padding(12.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
-                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
+                    notif.pesan?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Black
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        notif.createdAt?.let { createdAt ->
+                            Text(
+                                text = formatTime(createdAt), // Jam
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.Gray
+                            )
+                        }
+                        notif.createdAt?.let { createdAt ->
+                            Text(
+                                text = formatDate(createdAt), // Tanggal
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.Gray
+                            )
+                        }
+                    }
                 }
             }
         }
+
+
     }
 }
 
@@ -258,5 +290,25 @@ fun PrettyList(items: List<String>) {
                 )
             }
         }
+    }
+}
+
+fun formatDate(dateString: String): String {
+    return try {
+        val instant = Instant.parse(dateString)
+        val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale("id"))
+        formatter.format(instant.atZone(ZoneId.systemDefault()))
+    } catch (e: Exception) {
+        "-"
+    }
+}
+
+fun formatTime(dateString: String): String {
+    return try {
+        val instant = Instant.parse(dateString)
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        formatter.format(instant.atZone(ZoneId.systemDefault()))
+    } catch (e: Exception) {
+        "-"
     }
 }

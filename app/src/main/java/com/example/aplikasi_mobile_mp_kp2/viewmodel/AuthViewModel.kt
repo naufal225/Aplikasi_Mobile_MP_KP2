@@ -56,7 +56,7 @@ class AuthViewModel(private val application: Application) : AndroidViewModel(app
 
                 } else {
                     if(response.code() in 400..499) {
-                        _login_result.postValue( NetworkResponse.ERROR("Kesalahan Autentikasi"))
+                        _login_result.postValue( NetworkResponse.ERROR("Username, Email atau Password Salah"))
                     } else if(response.code() in 500..599) {
                         _login_result.postValue(NetworkResponse.ERROR("Kesalahan server"))
                     }

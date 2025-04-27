@@ -43,8 +43,8 @@ fun LoginScreen(
     navController: NavHostController,
     loginViewModel: AuthViewModel
 ) {
-    var email by remember { mutableStateOf("budi123") }
-    var password by remember { mutableStateOf("password") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     val loginResult by loginViewModel.login_result.observeAsState()
