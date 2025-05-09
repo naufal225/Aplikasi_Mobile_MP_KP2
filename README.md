@@ -1,4 +1,4 @@
-# Aplikasi Manajemen Proyek KP 2 — Mobile App (Manager & Employee)
+# Project Management Application KP 2 — Mobile App (Manager & Employee)
 
 ![Kotlin](https://img.shields.io/badge/language-Kotlin-purple?logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-00C4B3?logo=android&logoColor=white)
@@ -63,3 +63,6 @@ git clone https://github.com/naufal225/Aplikasi_Mobile_MP_KP2.git
 cd Aplikasi_Mobile_MP_KP2
 ```
 
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
